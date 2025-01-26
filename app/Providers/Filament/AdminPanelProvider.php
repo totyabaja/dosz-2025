@@ -5,9 +5,9 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\EmailVerification;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\RequestPasswordReset;
-use App\Filament\Pages\Backups;
 use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Pages\Registration;
+use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
 use App\Filament\Resources\MenuResource;
 use App\Livewire\MyProfileExtended;
 use App\Livewire\MyProfileExtendedUniversity;
@@ -39,7 +39,6 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
@@ -71,39 +70,28 @@ class AdminPanelProvider extends PanelProvider
             ->globalSearch(false)
             ->unsavedChangesAlerts()
             ->sidebarCollapsibleOnDesktop()
-            ->navigationGroups([
-                Navigation\NavigationGroup::make()
-                    ->label('Content') // !! To-Do: lang
-                    ->collapsible(false),
-                Navigation\NavigationGroup::make()
-                    ->label(__('menu.nav_group.access'))
-                    ->collapsible(false),
-                Navigation\NavigationGroup::make()
-                    ->label(__('menu.nav_group.settings'))
-                    ->collapsed(),
-                Navigation\NavigationGroup::make()
-                    ->label(__('menu.nav_group.activities'))
-                    ->collapsed(),
-            ])
             ->navigationItems([
-                Navigation\NavigationItem::make('Log Viewer') // !! To-Do: lang
+                \Filament\Navigation\NavigationItem::make('Log Viewer') // !! To-Do: lang
                     ->visible(fn(): bool => auth()->user()->can('access_log_viewer'))
                     ->url(config('app.url') . '/' . config('log-viewer.route_path'), shouldOpenInNewTab: true)
                     ->icon('fluentui-document-bullet-list-multiple-20-o')
                     ->group(__('menu.nav_group.activities'))
                     ->sort(99),
             ])
-            ->viteTheme('resources/css/filament/admin/theme.css')
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            //->viteTheme('resources/css/filament/admin/theme.css')
+            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->resources([
                 config('filament-logger.activity_resource')
             ])
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admijn\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                ManageGeneral::class,
+                ManageMail::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
+                Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
@@ -122,7 +110,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
-                    ->allowSubFolders(),
+                    ->allowSubFolders()
+                    ->allowUserAccess(),
                 \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
                     ->gridColumns([
@@ -161,18 +150,21 @@ class AdminPanelProvider extends PanelProvider
                     ]),
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
                 \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make()
+                    ->navigationGroup(fn() => __('menu.nav_group.activities'))
                     ->usingPage(HealthCheckResults::class)
                     ->authorize(fn(): bool => Auth::user()?->hasRole('super_admin')),
                 \RickDBCN\FilamentEmail\FilamentEmail::make(),
                 // TODO: https://filamentphp.com/plugins/visual-builder-email-templates
                 \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::make()
-                /*->enableNavigation(
-                        fn() => auth()->user()->can('view_queue_job') || auth()->user()->can('view_any_queue_job)'),
-                    )*/,
+                    ->navigationGroup(fn() => __('menu.nav_group.activities'))
+                    ->enableNavigation(
+                        fn() => auth()->user()->hasRole('super_admin'),
+                    ),
                 \Visualbuilder\EmailTemplates\EmailTemplatesPlugin::make()
-                /*->enableNavigation(
+                    ->navigationGroup(__('menu.nav_group.settings'))
+                    ->enableNavigation(
                         fn() => auth()->user()->can('view_email_templates') || auth()->user()->can('view_any_email_templates)'),
-                    )*/,
+                    ),
 
             ]);
     }

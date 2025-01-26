@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use BezhanSalleh\FilamentLanguageSwitch\Events\LocaleChanged;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\App;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -16,7 +17,7 @@ class LanguageSwitch extends Component
         \BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch::trigger(locale: $locale);
     }
 
-    public function render():  View
+    public function render(): View
     {
         $languageSwitch = \BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch::make();
         return view('livewire.language-switch', [

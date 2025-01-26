@@ -4,7 +4,7 @@
     $menuItems = [
         (object) [
             'route' => 'public.home',
-            'name' => 'Szervezet',
+            'name' => __('resource.title.organization'),
             'subs' => [
                 (object) ['route' => 'public.pages', 'params' => ['slug' => 'bemutatkozas'], 'name' => 'Bemutatkozás'],
                 (object) ['route' => 'public.pages', 'params' => ['slug' => 'elnokseg'], 'name' => 'Elnökség'],
@@ -36,11 +36,11 @@
                 (object) ['route' => 'public.pages', 'params' => ['slug' => 'dijazottak'], 'name' => 'Díjazottak'],
             ],
         ],
-        (object) ['route' => 'public.hirek', 'name' => 'Hírek', 'subs' => []],
-        (object) ['route' => 'public.rendezvenyek', 'name' => 'Rendezvények', 'subs' => []],
-        (object) ['route' => 'public.tok', 'name' => 'Tudományos osztályok', 'subs' => []],
-        (object) ['route' => 'public.jogsegely', 'name' => 'Jogsegélyszolgálat', 'subs' => []],
-        (object) ['route' => 'public.dokumentumok', 'name' => 'Dokumentumok', 'subs' => []],
+        (object) ['route' => 'public.hirek', 'name' => __('resource.title.posts'), 'subs' => []],
+        (object) ['route' => 'public.rendezvenyek', 'name' => __('resource.title.events'), 'subs' => []],
+        (object) ['route' => 'public.tok', 'name' => __('resource.title.tok'), 'subs' => []],
+        (object) ['route' => 'public.jogsegely', 'name' => __('resource.title.legal_aid'), 'subs' => []],
+        (object) ['route' => 'public.dokumentumok', 'name' => __('resource.title.documents'), 'subs' => []],
     ];
 
     $userMenuItems = [
@@ -60,7 +60,6 @@
 
     @vite('resources/css/app.css')
     @livewireStyles
-
 </head>
 
 <body class="min-h-screen antialiased font-normal fi-body fi-panel-public bg-gray-50 text-gray-950">
@@ -177,8 +176,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                    <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                    //-->
+                                                                                                                                                                                                                                                                                                                                                            <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                            //-->
                                         </div>
                                     </div>
                                     <div>

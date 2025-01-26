@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scientific;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
@@ -91,12 +92,12 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
             case 'to_admin':
                 return $this->hasAnyRole(['super_admin', 'dosz_admin', 'to_admin', 'to_rendezvenyes']);
                 break;
-            case 'events':
+            case 'event':
                 return $this->hasRole('user');
                 break;
         }
 
-        return false;
+        return true;
     }
 
     public function getFilamentAvatarUrl(): ?string
@@ -113,16 +114,12 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     // Define an accessor for the 'name' attribute
     public function getNameAttribute()
     {
-        switch (session('locale')) {
+        switch (session()->get('locale', 'hu')) {
             case 'hu':
                 return "{$this->lastname} {$this->firstname}";
                 break;
 
             case 'en':
-                return "{$this->firstname} {$this->lastname}";
-                break;
-
-            default:
                 return "{$this->firstname} {$this->lastname}";
                 break;
         }
@@ -143,7 +140,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
 
     public function doctoral_school(): BelongsTo
     {
-        return $this->belongsTo(DoctoralSchool::class);
+        return $this->belongsTo(Scientific\DoctoralSchool::class);
     }
 
     public function address(): HasOne
@@ -153,51 +150,39 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
 
     public function scientific_state(): BelongsTo
     {
-        return $this->belongsTo(ScientificState::class);
+        return $this->belongsTo(Scientific\ScientificState::class);
     }
 
     public function scientific_subfields(): BelongsToMany
     {
-        return $this->belongsToMany(ScientificSubfield::class)
+        return $this->belongsToMany(Scientific\ScientificSubfield::class)
             ->withPivot('keywords')
             ->withTimestamps();
     }
 
     public function scientific_fields_users(): HasMany
     {
-        return $this->hasMany(ScientificSubfieldUser::class);
+        return $this->hasMany(Scientific\ScientificSubfieldUser::class);
     }
 
     public function positions(): HasMany
     {
-        return $this->hasMany(Position::class);
+        return $this->hasMany(Position\Position::class);
     }
 
     public function scientific_department_users(): HasMany
     {
-        return $this->hasMany(ScientificDepartmentUser::class);
+        return $this->hasMany(Scientific\ScientificDepartmentUser::class);
     }
-
-
 
     public function scientific_departments(): BelongsToMany
     {
-        return $this->belongsToMany(ScientificDepartment::class)
+        return $this->belongsToMany(Scientific\ScientificDepartment::class)
             ->withPivot([
                 'accepted',
                 'request_datetime',
                 'acceptance_datetime',
             ])
             ->withTimestamps();
-    }
-
-    public function scientificDepartment(): BelongsToMany
-    {
-        return $this->scientific_departments();
-    }
-
-    public function getScientificDepartmentMemberAttribute(): bool
-    {
-        return $this->scientific_departments()->count();
     }
 }

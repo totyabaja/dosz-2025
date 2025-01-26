@@ -2,6 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Scientific\DoctoralSchool;
+use App\Models\Scientific\ScientificField;
+use App\Models\Scientific\ScientificState;
+use App\Models\Scientific\ScientificSubfield;
+use App\Models\Scientific\University;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Auth\Register;
@@ -148,7 +153,7 @@ class Registration extends Register
 
                 Forms\Components\Select::make('scientific_state_id')
                     ->nullable()
-                    ->options(fn () => \App\Models\ScientificState::pluck('name', 'id'))
+                    ->options(fn() => ScientificState::pluck('name', 'id'))
                     ->preload(), // TODO: kell a kapcsolat
                 Forms\Components\TextInput::make('fokozateve')
                     ->numeric()
@@ -157,7 +162,7 @@ class Registration extends Register
 
             Forms\Components\Select::make('universities')
                 ->label(__('University'))
-                ->options(fn () => \App\Models\University::pluck('full_name', 'id')) // Egyetemek listája
+                ->options(fn() => University::pluck('full_name', 'id')) // Egyetemek listája
                 ->live() // Figyelje a változást
                 ->searchable()
                 ->preload()
@@ -171,22 +176,22 @@ class Registration extends Register
                 ->options(function (callable $get) {
                     $universityId = $get('universities'); // Kiválasztott egyetem ID-je
                     if (! $universityId) {
-                        return \App\Models\DoctoralSchool::pluck('full_name', 'id'); // Alapértelmezett lista, ha nincs szűrés
+                        return DoctoralSchool::pluck('full_name', 'id'); // Alapértelmezett lista, ha nincs szűrés
                     }
 
                     // Szűkített lista az adott egyetem alapján
-                    return \App\Models\DoctoralSchool::where('university_id', $universityId)->pluck('full_name', 'id');
+                    return DoctoralSchool::where('university_id', $universityId)->pluck('full_name', 'id');
                 })
                 ->live()
                 ->searchable()
                 ->preload()
                 ->afterStateUpdated(function (callable $set, $state) {
                     // A doktori iskola kiválasztása után frissítjük az egyetemet
-                    $universityId = \App\Models\DoctoralSchool::find($state)?->university_id;
+                    $universityId = DoctoralSchool::find($state)?->university_id;
                     $set('universities', $universityId);
                 })
                 ->afterStateHydrated(function ($state, $set, $get) {
-                    $universityId = \App\Models\DoctoralSchool::find($state)?->university_id;
+                    $universityId = DoctoralSchool::find($state)?->university_id;
                     $set('universities', $universityId);
                 }),
 
@@ -209,7 +214,7 @@ class Registration extends Register
                     Forms\Components\Grid::make()->schema([
                         Forms\Components\Select::make('scientific_fields')
                             ->label('Scientific Field')
-                            ->options(fn () => \App\Models\ScientificField::all()->pluck('name', 'id'))
+                            ->options(fn() => ScientificField::all()->pluck('name', 'id'))
                             ->live() // Figyelje a változást
                             ->searchable()
                             ->preload()
@@ -222,22 +227,22 @@ class Registration extends Register
                             ->options(function (callable $get) {
                                 $scientificFieldId = $get('scientific_fields'); // Kiválasztott egyetem ID-je
                                 if (! $scientificFieldId) {
-                                    return \App\Models\ScientificSubfield::pluck('name', 'id'); // Alapértelmezett lista, ha nincs szűrés
+                                    return ScientificSubfield::pluck('name', 'id'); // Alapértelmezett lista, ha nincs szűrés
                                 }
 
                                 // Szűkített lista az adott egyetem alapján
-                                return \App\Models\ScientificSubfield::where('scientific_field_id', $scientificFieldId)->pluck('name', 'id');
+                                return ScientificSubfield::where('scientific_field_id', $scientificFieldId)->pluck('name', 'id');
                             })
                             ->live()
                             ->searchable()
                             ->preload()
                             ->afterStateUpdated(function (callable $set, $state) {
                                 // A doktori iskola kiválasztása után frissítjük az egyetemet
-                                $scientificFieldId = \App\Models\ScientificSubfield::find($state)?->scientific_field_id;
+                                $scientificFieldId = ScientificSubfield::find($state)?->scientific_field_id;
                                 $set('scientific_fields', $scientificFieldId);
                             })
                             ->afterStateHydrated(function ($state, $set) {
-                                $scientificFieldId = \App\Models\ScientificSubfield::find($state)?->scientific_field_id;
+                                $scientificFieldId = ScientificSubfield::find($state)?->scientific_field_id;
                                 $set('scientific_fields', $scientificFieldId);
                             }),
                     ]),

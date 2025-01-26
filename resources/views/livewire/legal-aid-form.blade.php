@@ -38,7 +38,7 @@
                 <select wire:model.change="university_id" class="select grow" id="jog_university">
                     <option value="">Válassz</option>
                     @foreach ($universities as $university)
-                        <option value="{{ $university->id }}">{{ $university->full_name }}</option>
+                        <option value="{{ $university->id }}">{{ $university->filament_full_name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -52,7 +52,7 @@
                 <select wire:model.change="doctoral_school_id" class="select grow" id="jog_doctoral_school">
                     <option value="">Válassz</option>
                     @foreach ($doctoral_schools as $doctoral_school)
-                        <option value="{{ $doctoral_school->id }}">{{ $doctoral_school->full_name }}</option>
+                        <option value="{{ $doctoral_school->id }}">{{ $doctoral_school->filament_full_name }}</option>
                     @endforeach
                 </select>
             </div>

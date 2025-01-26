@@ -1,6 +1,6 @@
 @extends('filament.layouts.app')
 
-@section('title', __('title.dokumentumok'))
+@section('title', __('resource.title.documents'))
 
 @section('content')
 

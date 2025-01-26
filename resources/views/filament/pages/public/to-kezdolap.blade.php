@@ -1,6 +1,6 @@
 @extends('filament.layouts.tok', compact('to_slug'))
 
-@section('title', \App\Models\ScientificDepartment::where('slug', $to_slug)->first()->name)
+@section('title', \App\Models\Scientific\ScientificDepartment::where('slug', $to_slug)->first()->filament_name)
 
 @section('content')
 

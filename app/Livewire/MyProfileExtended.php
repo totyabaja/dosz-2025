@@ -2,8 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Filament\Admin\Resources\UserResource;
+use App\Settings\MailSettings;
 use Exception;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Actions\Action as ActionsAction;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Jeffgreco13\FilamentBreezy\Livewire\MyProfileComponent;
@@ -58,12 +63,35 @@ class MyProfileExtended extends MyProfileComponent
                     ->avatar()
                     ->required(),
                 Grid::make()->schema([
-                    TextInput::make('username')
+                    /*TextInput::make('username')
                         ->disabled()
                         ->required(),
+                        */
                     TextInput::make('email')
                         ->disabled()
-                        ->required(),
+                        ->required()
+                        ->suffixAction(
+                            fn($record) => ActionsAction::make('editEmail')
+                                ->label('Szerkesztés')
+                                ->icon('heroicon-o-pencil')
+                                ->modalHeading('E-mail cím szerkesztése')
+                                ->modalSubheading('Az új e-mail cím mentése után újra validálni kell azt.')
+                                ->modalButton('Mentés')
+                                ->form([
+                                    TextInput::make('email')
+                                        ->label('Új e-mail cím')
+                                        ->email()
+                                        ->unique(table: 'users', column: 'email', ignoreRecord: true)
+                                        ->required()
+                                        ->unique('users', 'email')
+                                        ->rules(['email', 'required']),
+                                ])
+                                ->action(fn($data, $record) => $record->update([
+                                    'email' => $data['email'],
+                                    'email_verified_at' => null, // Az e-mail újra validálásához
+                                ]))
+                                ->after(fn(MailSettings $settings, Model $record) => UserResource::doResendEmailVerification($settings, $record)) // E-mail validálás újraindítása
+                        ),
                 ]),
                 Grid::make()->schema([
                     TextInput::make('firstname')

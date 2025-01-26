@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Http\Responses\LogoutResponse;
 use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Filament\Facades\Filament;
 use Filament\Tables\Table;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -48,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // # \Opcodes\LogViewer
+        // TODO: csak akkor, ha super-admin
         LogViewer::auth(function ($request) {
             $role = auth()?->user()?->roles?->first()->name;
             return $role == config('filament-shield.super_admin.name');

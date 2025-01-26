@@ -5,7 +5,7 @@ return [
         'enabled' => true,
         'label' => 'Job',
         'plural_label' => 'Jobs',
-        'navigation_group' => 'Settings',
+        'navigation_group' => 'menu.nav_group.activities',
         'navigation_icon' => 'heroicon-o-cpu-chip',
         'navigation_sort' => null,
         'navigation_count_badge' => false,

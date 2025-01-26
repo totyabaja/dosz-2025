@@ -1,10 +1,10 @@
 @extends('filament.layouts.app')
 
-@section('title', __('title.legal_aid'))
+@section('title', __('resource.title.legal_aid'))
 
 @php
-    $doctoral_schools = \App\Models\DoctoralSchool::orderBy('full_name')->get();
-    $universities = \App\Models\University::orderBy('full_name')->get();
+    $doctoral_schools = \App\Models\Scientific\DoctoralSchool::orderBy('full_name')->get();
+    $universities = \App\Models\Scientific\University::orderBy('full_name')->get();
 @endphp
 
 @section('content')

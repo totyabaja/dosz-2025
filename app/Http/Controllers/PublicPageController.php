@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Blog\Post;
+use App\Models\Aid\FAQ as AidFAQ;
+use App\Models\Blog;
 use App\Models\Event;
-use App\Models\FAQ;
+use App\Models\Scientific;
+use App\Models\Aid;
 use App\Models\Page;
 use App\Models\ScientificDepartment;
 use Illuminate\Http\Request;
-use TomatoPHP\FilamentMediaManager\Models\Folder;
+use App\Models\ModifiedModels\Folder;
 use TomatoPHP\FilamentMediaManager\Models\Media;
 
 class PublicPageController extends Controller
 {
     public function home()
     {
-        $slides = Post::query()
+        $slides = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->latest()
             ->paginate(3);
@@ -45,7 +47,7 @@ class PublicPageController extends Controller
 
     public function hirek()
     {
-        $hirek = Post::query()
+        $hirek = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->get();
 
@@ -54,7 +56,7 @@ class PublicPageController extends Controller
 
     public function hir($slug)
     {
-        $hir = Post::where('slug', $slug)->first();
+        $hir = Blog\Post::where('slug', $slug)->first();
 
         return view('filament.pages.public.hir', compact('hir'));
     }
@@ -62,7 +64,7 @@ class PublicPageController extends Controller
     // TODO
     public function to_hirek($to_slug)
     {
-        $hirek = Post::query()
+        $hirek = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->get();
 
@@ -72,7 +74,7 @@ class PublicPageController extends Controller
     // TODO
     public function to_hir($to_slug, $slug)
     {
-        $hir = Post::where('slug', $slug)->first();
+        $hir = Blog\Post::where('slug', $slug)->first();
 
         return view('filament.pages.public.to-hir', compact('to_slug', 'hir'));
     }
@@ -85,7 +87,7 @@ class PublicPageController extends Controller
     public function gyik()
     {
 
-        $faqs = FAQ::query()
+        $faqs = Aid\FAQ::query()
             ->where('language', session()->get('locale'))
             ->orderBy('question')
             ->get();
@@ -97,7 +99,7 @@ class PublicPageController extends Controller
     {
 
         // TODO: nem ez kell ide
-        $faqs = FAQ::query()
+        $faqs = Aid\GeneralQuestion::query()
             ->where('language', session()->get('locale'))
             ->orderBy('question')
             ->get();
@@ -107,9 +109,9 @@ class PublicPageController extends Controller
 
     public function tok()
     {
-        $tok = ScientificDepartment::query()
-            ->orderBy('name_' . (session()->get('locale') ?? 'hu'))
-            ->get();
+        $tok = Scientific\ScientificDepartment::query()
+            ->get()
+            ->sortBy('filament_name');
 
         return view('filament.pages.public.tok', compact('tok'));
     }
@@ -117,7 +119,7 @@ class PublicPageController extends Controller
     // TODO
     public function to($to_slug)
     {
-        $slides = Post::query()
+        $slides = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->latest()
             ->paginate(3);
@@ -127,7 +129,7 @@ class PublicPageController extends Controller
 
     public function rendezvenyek()
     {
-        $rendezvenyek = Event::query()
+        $rendezvenyek = Event\Event::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->get();
 
@@ -136,7 +138,7 @@ class PublicPageController extends Controller
 
     public function rendezveny($slug)
     {
-        $rendezveny = Event::where('slug', $slug)->first();
+        $rendezveny = Event\Event::where('slug', $slug)->first();
 
         return view('filament.pages.public.rendezveny', compact('rendezveny'));
     }
@@ -144,7 +146,7 @@ class PublicPageController extends Controller
     // TODO
     public function to_rendezvenyek($to_slug)
     {
-        $rendezvenyek = Event::query()
+        $rendezvenyek = Event\Event::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->get();
 
@@ -154,7 +156,7 @@ class PublicPageController extends Controller
     // TODO
     public function to_rendezveny($to_slug, $slug)
     {
-        $rendezveny = Event::where('slug', $slug)->first();
+        $rendezveny = Event\Event::where('slug', $slug)->first();
 
         return view('filament.pages.public.to-rendezveny', compact('to_slug', 'rendezveny'));
     }

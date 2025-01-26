@@ -25,6 +25,7 @@
         "bezhansalleh/filament-language-switch": "^3.1",
         "bezhansalleh/filament-shield": "^3.2",
         "codeat3/blade-fluentui-system-icons": "^1.32",
+        "codewithdennis/filament-simple-alert": "^3.0",
         "croustibat/filament-jobs-monitor": "^2.5",
         "filament/filament": "^3.2",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
@@ -45,6 +46,7 @@
         "stichoza/google-translate-php": "^5.2",
         "tomatophp/filament-media-manager": "^1.1",
         "visualbuilder/email-templates": "^3.1",
+        "wiebenieuwenhuis/filament-code-editor": "^1.1",
         "z3d0x/filament-logger": "^0.7.2"
     },
     "require-dev": {

@@ -1,6 +1,6 @@
 @extends('filament.layouts.app')
 
-@section('title', __('title.tok'))
+@section('title', __('resource.title.tok'))
 
 @section('content')
     <div class="prose max-w-none">
@@ -9,7 +9,7 @@
             @forelse ($tok as $to)
                 <a href="{{ route('public.to', ['to_slug' => $to->slug]) }}"
                     class="flex items-center justify-center hover:animate-pulse" aria-label="Icon Button">
-                    <img src="{{ $to->getFilamentAvatarUrl() }}" alt="{{ $to->name }}" />
+                    <img src="{{ $to->getFilamentAvatarUrl() }}" alt="{{ $to->filament_name }}" />
                 </a>
 
             @empty

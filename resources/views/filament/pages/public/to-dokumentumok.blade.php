@@ -1,6 +1,6 @@
 @extends('filament.layouts.tok', compact('to_slug'))
 
-@section('title', __('title.dokumentumok'))
+@section('title', __('resource.title.documents'))
 
 @section('content')
 

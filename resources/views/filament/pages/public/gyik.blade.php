@@ -1,6 +1,6 @@
 @extends('filament.layouts.app')
 
-@section('title', __('title.gyik'))
+@section('title', __('resource.title.gyik'))
 
 @section('content')
     <div class="prose max-w-none">
@@ -11,7 +11,7 @@
                     <button class="inline-flex items-center justify-between accordion-toggle text-start"
                         aria-controls="delivery-icon-collapse" aria-expanded="false">
                         <span class="inline-flex items-center gap-x-4">
-                            <span class="icon-[tabler--shopping-bag] text-base-content size-6"></span>
+                            <span class="icon-[tabler--question-mark] text-base-content size-6"></span>
                             {{ $faq->question }}
                         </span>
                         <span

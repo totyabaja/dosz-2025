@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\DoctoralSchool;
-use App\Models\LegalAid;
+use App\Models\Scientific\DoctoralSchool;
+use App\Models\Aid\LegalAid;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -51,14 +51,14 @@ class LegalAidForm extends Component
 
     public function updatedDoctoralSchoolId($value)
     {
-        $this->university_id = DoctoralSchool::find($value)?->university_id ?? null;
+        $this->university_id = \App\Models\Scientific\DoctoralSchool::find($value)?->university_id ?? null;
     }
 
     public function render()
     {
         return view('livewire.legal-aid-form', [
-            'universities' => \App\Models\University::query()->get(),
-            'doctoral_schools' => \App\Models\DoctoralSchool::query()
+            'universities' => \App\Models\Scientific\University::query()->get(),
+            'doctoral_schools' => \App\Models\Scientific\DoctoralSchool::query()
                 ->when($this->university_id, function ($query) {
                     $query->where('university_id', $this->university_id);
                 })

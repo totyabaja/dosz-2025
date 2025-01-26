@@ -11,4 +11,6 @@
             </div>
         </form>
     </x-filament::card>
+
+    <x-filament-actions::modals />
 </x-filament-breezy::grid-section>

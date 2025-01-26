@@ -99,16 +99,19 @@ return [
     'content_width' => '600',
 
     //Contact details included in default email templates
+    // TODO
     'customer-services' => [
-        'email' => 'support@yourcompany.com',
+        'email' => 'iroda@yourcompany.com',
         'phone' => '+441273 455702'
     ],
 
     //Footer Links
+    // TODO
     'links' => [
         ['name' => 'Website', 'url' => 'https://yourwebsite.com', 'title' => 'Goto website'],
         [
-            'name' => 'Privacy Policy', 'url' => 'https://yourwebsite.com/privacy-policy',
+            'name' => 'Privacy Policy',
+            'url' => 'https://yourwebsite.com/privacy-policy',
             'title' => 'View Privacy Policy'
         ],
     ],
@@ -116,16 +119,12 @@ return [
     //Options for alternative languages
     //Note that Laravel default locale is just 'en' you can use this but
     //we are being more specific to cater for English vs USA languages
-    'default_locale' => 'en_GB',
+    'default_locale' => 'en',
 
     //These will be included in the language picker when editing an email template
     'languages' => [
-        'en_GB' => ['display' => 'British', 'flag-icon' => 'gb'],
-        'en_US' => ['display' => 'USA', 'flag-icon' => 'us'],
-        'es' => ['display' => 'Español', 'flag-icon' => 'es'],
-        'fr' => ['display' => 'Français', 'flag-icon' => 'fr'],
-        'pt' => ['display' => 'Brasileiro', 'flag-icon' => 'br'],
-        'in' => ['display' => 'Hindi', 'flag-icon' => 'in'],
+        'en' => ['display' => 'British', 'flag-icon' => 'gb'],
+        'hu' => ['display' => 'Español', 'flag-icon' => 'hu'],
     ],
 
     //Notifiable Models who can receive emails
@@ -147,11 +146,12 @@ return [
 
     //Most built-in emails can be automatically sent with minimal setup,
     //except "request password reset" requires a function in the User's model.  See readme.md for details
+    // TODO: mikor menjen mail
     'send_emails' => [
         'new_user_registered' => true,
         'verification' => true,
         'user_verified' => true,
-        'login' => true,
+        'login' => false,
         'password_reset_success' => true,
         'locked_out' => true,
     ],

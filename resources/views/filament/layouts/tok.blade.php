@@ -1,7 +1,7 @@
 @php
     $settings = app(\App\Settings\GeneralSettings::class);
 
-    $to = \App\Models\ScientificDepartment::where('slug', $to_slug)->first();
+    $to = \App\Models\Scientific\ScientificDepartment::where('slug', $to_slug)->first();
 
     if (!$to) {
         abort(404, 'Tudományos osztály nem található.');
@@ -47,7 +47,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? $to->name }}</title>
+    <title>{{ $title ?? $to->filament_name }}</title>
     <link rel="icon" href="{{ $to->getFilamentAvatarUrl() }}">
 
     @vite('resources/css/app.css')
@@ -169,8 +169,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //-->
                                         </div>
                                     </div>
                                     <div>
