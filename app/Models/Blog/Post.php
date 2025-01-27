@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Tags\HasTags;
@@ -15,6 +16,7 @@ class Post extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia, HasTags, HasUlids;
+    use SoftDeletes;
 
     /**
      * @var string
@@ -32,6 +34,7 @@ class Post extends Model implements HasMedia
         'short_description',
         'published_at',
         'is_featured',
+        'scientific_department_id',
     ];
 
     /**

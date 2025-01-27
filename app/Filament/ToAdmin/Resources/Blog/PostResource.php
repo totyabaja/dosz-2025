@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Blog;
+namespace App\Filament\ToAdmin\Resources\Blog;
 
 use AmidEsfahani\FilamentTinyEditor\TinyEditor;
-use App\Filament\Admin\Resources\Blog\PostResource\Pages;
+use App\Filament\Admin\Resources\Blog\PostResource as AdminPostResource;
+use App\Filament\ToAdmin\Resources\Blog\PostResource\Pages;
+use App\Filament\ToAdmin\Resources\Blog\PostResource\RelationManagers;
 use App\Models\Blog\Post;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\SpatieTagsInput;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -16,33 +18,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
 use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
+use Illuminate\Support\Str;
 
 class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
 
-    protected static ?string $slug = 'blog/posts';
-
-    protected static ?string $recordTitleAttribute = 'title';
-
-    protected static ?string $navigationIcon = 'fluentui-news-20';
-
-    public static function getModelLabel(): string
-    {
-        return __('resource.title.post');
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return __('resource.title.posts');
-    }
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('scientific_department_id')
+                    ->required(),
                 Forms\Components\Section::make('Image')
                     ->schema([
                         MediaManagerInput::make('post-images')
@@ -78,7 +68,7 @@ class PostResource extends Resource
 
                         Forms\Components\Tabs::make()->schema([
                             Forms\Components\Tabs\Tab::make('Magyar')->schema([
-                                TextInput::make('short_description.hu')
+                                Forms\Components\TextInput::make('short_description.hu')
                                     ->label('Short Description (HU)')
                                     ->columnSpan('full')
                                     ->required(fn($get): bool => $get('name.hu') != ''),
@@ -92,7 +82,7 @@ class PostResource extends Resource
                                     ->required(fn($get): bool => $get('name.hu') != ''),
                             ]),
                             Forms\Components\Tabs\Tab::make('Angol')->schema([
-                                TextInput::make('short_description.en')
+                                Forms\Components\TextInput::make('short_description.en')
                                     ->label('Short Description (EN)')
                                     ->columnSpan('full')
                                     ->required(fn($get): bool => $get('name.en') != ''),
@@ -185,7 +175,6 @@ class PostResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
-                    tables\Actions\ForceDeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -196,7 +185,7 @@ class PostResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->whereNull('scientific_department_id');
+            ->where('scientific_department_id', auth()->user()->currentDepartment()->id);
     }
 
     public static function getRelations(): array
@@ -213,15 +202,5 @@ class PostResource extends Resource
             'create' => Pages\CreatePost::route('/create'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Default';
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return 0;
     }
 }

@@ -5,45 +5,52 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Auth\EmailVerification;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\RequestPasswordReset;
-use App\Filament\Pages\HealthCheckResults;
 use App\Filament\Pages\Registration;
-use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
-use App\Filament\Resources\MenuResource;
+use App\Filament\ToAdmin\Widgets\DepartmentInfoWidget;
 use App\Livewire\MyProfileExtended;
 use App\Livewire\MyProfileExtendedUniversity;
 use App\Settings\GeneralSettings;
-use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
+use Closure;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
+use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation;
 use Filament\Navigation\UserMenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class AdminPanelProvider extends PanelProvider
+class ToAdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('admin')
-            ->path('admin')
+            ->id('to-admin')
+            ->path('to-admin')
             ->login(Login::class)
             ->registration(Registration::class)
             ->defaultThemeMode(ThemeMode::Light)
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                //fn(): View => view('filament.components.scientific-department-switcher'),
+                fn(): string => Blade::render('@livewire(\'scientific-department-switch\')'),
+            )
             ->userMenuItems([
                 UserMenuItem::make()
                     ->label('Kezdőoldal')
@@ -54,10 +61,10 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn(): string => url('/event'))
                     ->icon('far-calendar'),
                 UserMenuItem::make()
-                    ->label('TO Admin')
-                    ->url('/to-admin')
+                    ->label('Admin')
+                    ->url('/admin')
                     ->icon('heroicon-o-user')
-                    ->visible(fn(): bool => ! Auth::user()?->onlyNativeUser()),
+                    ->visible(fn(): bool => Auth::user()?->hasAnyRole(['super_admin', 'dosz_admin', 'jogsegelyes', 'dosz_rendezvenyes'])),
             ])
             ->passwordReset(RequestPasswordReset::class)
             ->emailVerification(EmailVerification::class)
@@ -67,33 +74,20 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight(fn(GeneralSettings $settings) => $settings->brand_logoHeight)
             ->colors(fn(GeneralSettings $settings) => $settings->site_theme)
             ->databaseNotifications()->databaseNotificationsPolling('30s')
-            //->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearch(false)
             ->unsavedChangesAlerts()
             ->sidebarCollapsibleOnDesktop()
-            ->navigationItems([
-                \Filament\Navigation\NavigationItem::make('Log Viewer') // !! To-Do: lang
-                    ->visible(fn(): bool => auth()->user()->can('access_log_viewer'))
-                    ->url(config('app.url') . '/' . config('log-viewer.route_path'), shouldOpenInNewTab: true)
-                    ->icon('fluentui-document-bullet-list-multiple-20-o')
-                    ->group(__('menu.nav_group.activities'))
-                    ->sort(99),
-            ])
-            //->viteTheme('resources/css/filament/admin/theme.css')
-            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
-            ->resources([
-                config('filament-logger.activity_resource')
-            ])
-            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admijn\\Pages')
+            ->navigationGroups([])
+            ->discoverResources(in: app_path('Filament/ToAdmin/Resources'), for: 'App\\Filament\\ToAdmin\\Resources')
+            ->discoverPages(in: app_path('Filament/ToAdmin/Pages'), for: 'App\\Filament\\ToAdmin\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-                ManageGeneral::class,
-                ManageMail::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/ToAdmin/Widgets'), for: 'App\\Filament\\ToAdmin\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                //Widgets\FilamentInfoWidget::class,
+                DepartmentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -113,22 +107,6 @@ class AdminPanelProvider extends PanelProvider
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
                     ->allowSubFolders()
                     ->allowUserAccess(),
-                \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
-                    ->gridColumns([
-                        'default' => 2,
-                        'sm' => 1
-                    ])
-                    ->sectionColumnSpan(1)
-                    ->checkboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                        'lg' => 3,
-                    ])
-                    ->resourceCheckboxListColumns([
-                        'default' => 1,
-                        'sm' => 2,
-                    ]),
                 \Jeffgreco13\FilamentBreezy\BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,
@@ -150,22 +128,6 @@ class AdminPanelProvider extends PanelProvider
                         'university_info' => MyProfileExtendedUniversity::class,
                     ]),
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
-                \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make()
-                    ->navigationGroup(fn() => __('menu.nav_group.activities'))
-                    ->usingPage(HealthCheckResults::class)
-                    ->authorize(fn(): bool => Auth::user()?->hasRole('super_admin')),
-                \RickDBCN\FilamentEmail\FilamentEmail::make(),
-                // TODO: https://filamentphp.com/plugins/visual-builder-email-templates
-                \Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin::make()
-                    ->navigationGroup(fn() => __('menu.nav_group.activities'))
-                    ->enableNavigation(
-                        fn() => auth()->user()->hasRole('super_admin'),
-                    ),
-                \Visualbuilder\EmailTemplates\EmailTemplatesPlugin::make()
-                    ->navigationGroup(__('menu.nav_group.settings'))
-                    ->enableNavigation(
-                        fn() => auth()->user()->can('view_email_templates') || auth()->user()->can('view_any_email_templates)'),
-                    ),
 
             ]);
     }

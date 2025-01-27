@@ -61,10 +61,10 @@ Route::get('/dokumentumok/{folder?}', [PublicPageController::class, 'dokumentumo
 //Route::get('/tiszteletbeli-elnokok', [PublicPageController::class, 'tiszteletbeli_elnokok'])->name('public.page.tiszteletbeli-elnokok');
 //Route::get('/dijazottak', [PublicPageController::class, 'dijazottak'])->name('public.page.dijazottak');
 
-Route::get('/{slug}', [PublicPageController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('public.pages');
 Route::get('/tok/{to_slug}/{slug}', [PublicPageController::class, 'to_show'])
     ->where('to_slug', '[a-z0-9-]+')
     ->where('slug', '[a-z0-9-]+')
     ->name('public.to.pages');
+Route::get('/{slug}', [PublicPageController::class, 'show'])->where('slug', '[a-z0-9-]+')->name('public.pages');
 
 // Route::get('/', [PublicController::class, 'index']);

@@ -185,4 +185,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
             ])
             ->withTimestamps();
     }
+
+    public function currentDepartment(): ?Scientific\ScientificDepartment
+    {
+        return Scientific\ScientificDepartment::find(session()->get('sd_selected', null));
+    }
 }

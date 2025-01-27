@@ -50,10 +50,16 @@ class EventPanelProvider extends PanelProvider
                     ->icon('heroicon-o-cog-6-tooth'),
                 UserMenuItem::make()
                     ->label('Rendezvényeim')
-                    ->url(fn(): string => url('/event')),
+                    ->url(fn(): string => url('/event'))
+                    ->icon('far-calendar'),
+                UserMenuItem::make()
+                    ->label('Admin')
+                    ->url('/admin')
+                    ->icon('heroicon-o-user')
+                    ->visible(fn(): bool => Auth::user()?->hasAnyRole(['super_admin', 'dosz_admin', 'jogsegelyes', 'dosz_rendezvenyes'])),
                 UserMenuItem::make()
                     ->label('TO Admin')
-                    ->url('/to')
+                    ->url('/to-admin')
                     ->icon('heroicon-o-user')
                     ->visible(fn(): bool => ! Auth::user()?->onlyNativeUser()),
             ])
@@ -69,14 +75,6 @@ class EventPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([])
-            ->navigationItems([
-                \Filament\Navigation\NavigationItem::make('Log Viewer') // !! To-Do: lang
-                    ->visible(fn(): bool => auth()->user()->can('access_log_viewer'))
-                    ->url(config('app.url') . '/' . config('log-viewer.route_path'), shouldOpenInNewTab: true)
-                    ->icon('fluentui-document-bullet-list-multiple-20-o')
-                    ->group(__('menu.nav_group.activities'))
-                    ->sort(99),
-            ])
             ->discoverResources(in: app_path('Filament/Event/Resources'), for: 'App\\Filament\\Event\\Resources')
             ->discoverPages(in: app_path('Filament/Event/Pages'), for: 'App\\Filament\\Event\\Pages')
             ->pages([

@@ -3,8 +3,8 @@
 namespace App\Livewire;
 
 use App\Filament\Pages\Registration;
-use App\Models\ScientificDepartment;
 use App\Models\User;
+use App\Models\Scientific;
 use Carbon\Carbon;
 use Exception;
 use Filament\Facades\Filament;
@@ -85,11 +85,9 @@ class MyProfileExtendedUniversity extends MyProfileComponent
                             DateTimePicker::make('adatvedelmit_elfogadta')
                                 ->readOnly()
                                 ->suffixAction(
-                                    fn ($component) => Action::make('updateUser')
-                                        ->label(fn ($record): string => $record->editing_compiler ? 'INT' : 'AVV')
-                                        ->form([
-
-                                        ])
+                                    fn($component) => Action::make('updateUser')
+                                        ->label(fn($record): string => $record->editing_compiler ? 'INT' : 'AVV')
+                                        ->form([])
                                         ->icon('heroicon-o-shield-check')
                                         ->tooltip('GDPR elolvasása és elfogadása')
                                         ->modalWidth('md')
@@ -129,7 +127,7 @@ class MyProfileExtendedUniversity extends MyProfileComponent
             $this->redirect('my-profile', navigate: FilamentView::hasSpaMode() && is_app_url('my-profile'));
         } catch (\Throwable $th) {
             Notification::make()
-                ->title('Failed to update.'.$th->getMessage())
+                ->title('Failed to update.' . $th->getMessage())
                 ->danger()
                 ->send();
         }
@@ -170,32 +168,33 @@ class MyProfileExtendedUniversity extends MyProfileComponent
                                     // Scientific Department select
                                     Forms\Components\Select::make('scientific_department_id')
                                         ->relationship('scientific_department', 'id')
-                                        ->options(fn () => \App\Models\ScientificDepartment::orderBy('name_hu')
-                                            ->get()
-                                            ->pluck('name_hu', 'id')
-                                            ->toArray(),
+                                        ->options(
+                                            fn() => Scientific\ScientificDepartment::all()
+                                                ->sortBy('filament_name')
+                                                ->pluck('name.' . session()->get('locale', 'hu'), 'id')
+                                                ->toArray(),
                                         )
                                         ->searchable()
                                         ->preload()
-                                        ->disabled(fn ($get) => $get('id') != null) // Engedélyezett csak új elemnél
+                                        ->disabled(fn($get) => $get('id') != null) // Engedélyezett csak új elemnél
                                         ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                         ->columnSpan(2),
 
                                     // Checkbox - Accepted
                                     Forms\Components\Checkbox::make('pivot.accepted')
                                         ->label('Tag?')
-                                        ->hidden(fn ($get) => $get('id') == null) // Csak meglévő elemnél látható
+                                        ->hidden(fn($get) => $get('id') == null) // Csak meglévő elemnél látható
                                         ->disabled(),
 
                                     // DateTime Pickers - Meglévő adatokhoz
                                     Forms\Components\DateTimePicker::make('pivot.request_datetime')
                                         ->label('Request_date')
-                                        ->hidden(fn ($get) => $get('id') == null)
+                                        ->hidden(fn($get) => $get('id') == null)
                                         ->disabled(),
 
                                     Forms\Components\DateTimePicker::make('pivot.acceptance_datetime')
                                         ->label('Acceptance_date')
-                                        ->hidden(fn ($get) => $get('id') == null)
+                                        ->hidden(fn($get) => $get('id') == null)
                                         ->disabled(),
 
                                     // Akciók
@@ -205,18 +204,18 @@ class MyProfileExtendedUniversity extends MyProfileComponent
                                             ->label('Visszavonás')
                                             ->color('danger')
                                             ->icon('heroicon-o-trash')
-                                            ->disabled(fn ($get) => $get('id') == null)
+                                            ->disabled(fn($get) => $get('id') == null)
                                             ->action(function ($record) {
                                                 // Új kapcsolat létrehozása
                                                 $record->delete();
 
                                                 Notification::make()
                                                     ->title('Új tagsági igény visszavonása')
-                                                    ->body('A tagsági igényét a(z) '.($record->scientific_department->name).' sikeresen megküldte.')
+                                                    ->body('A tagsági igényét a(z) ' . ($record->scientific_department->name) . ' sikeresen megküldte.')
                                                     ->success()
                                                     ->send();
                                             }),
-                                    ])->hidden(fn ($get) => $get('id') == null),
+                                    ])->hidden(fn($get) => $get('id') == null),
                                     Actions::make([
                                         // Tagság igénylése - Csak új elemnél látható
                                         Actions\Action::make('save_scientific_department')
@@ -235,11 +234,11 @@ class MyProfileExtendedUniversity extends MyProfileComponent
 
                                                 Notification::make()
                                                     ->title('Új tagsági igény megküldve')
-                                                    ->body('A tagsági igényét a(z) '.(ScientificDepartment::findOrFail($get('scientific_department_id'))->name).' sikeresen megküldte.')
+                                                    ->body('A tagsági igényét a(z) ' . (Scientific\ScientificDepartment::findOrFail($get('scientific_department_id'))->filament_name) . ' sikeresen megküldte.')
                                                     ->success()
                                                     ->send();
                                             }),
-                                    ])->hidden(fn ($get) => $get('id') != null),
+                                    ])->hidden(fn($get) => $get('id') != null),
                                 ]),
                         ])
                         ->columnSpanFull(),

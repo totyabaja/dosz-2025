@@ -176,8 +176,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                            <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                            //-->
+                                                                                                                                                                                                                                                                                                                                                                <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                //-->
                                         </div>
                                     </div>
                                     <div>

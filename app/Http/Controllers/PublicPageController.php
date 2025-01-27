@@ -11,6 +11,7 @@ use App\Models\Page;
 use App\Models\ScientificDepartment;
 use Illuminate\Http\Request;
 use App\Models\ModifiedModels\Folder;
+use App\Models\Scientific\ScientificDepartment as ScientificScientificDepartment;
 use TomatoPHP\FilamentMediaManager\Models\Media;
 
 class PublicPageController extends Controller
@@ -49,6 +50,7 @@ class PublicPageController extends Controller
     {
         $hirek = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
+            ->whereNull('scientific_department_id')
             ->get();
 
         return view('filament.pages.public.hirek', compact('hirek'));
@@ -66,6 +68,7 @@ class PublicPageController extends Controller
     {
         $hirek = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
+            ->where('scientific_department_id', ScientificScientificDepartment::where('slug', $to_slug)->first()->id)
             ->get();
 
         return view('filament.pages.public.to-hirek', compact('to_slug', 'hirek'));
@@ -124,7 +127,14 @@ class PublicPageController extends Controller
             ->latest()
             ->paginate(3);
 
-        return view('filament.pages.public.to-kezdolap', compact('to_slug', 'slides'));
+
+        $dosz_hirek =
+            Blog\Post::query()
+            ->whereNotNull('name->' . session()->get('locale', 'hu'))
+            ->whereNull('scientific_department_id')
+            ->get();
+
+        return view('filament.pages.public.to-kezdolap', compact('to_slug', 'slides', 'dosz_hirek'));
     }
 
     public function rendezvenyek()
