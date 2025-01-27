@@ -15,9 +15,9 @@ return new class extends Migration
         DB::table('blog_posts')->truncate();
 
         Schema::table('blog_posts', function (Blueprint $table) {
-            //$table->renameColumn('short_content', 'short_description');
-            //$table->renameColumn('title', 'name');
-            //$table->renameColumn('content', 'description');
+            $table->renameColumn('short_content', 'short_description');
+            $table->renameColumn('title', 'name');
+            $table->renameColumn('content', 'description');
         });
         Schema::table('blog_posts', function (Blueprint $table) {
             $table->json('short_description')->change();
