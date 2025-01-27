@@ -2,33 +2,22 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\EmailVerification;
-use App\Filament\Pages\Auth\Login;
-use App\Filament\Pages\Auth\RequestPasswordReset;
-use App\Filament\Pages\HealthCheckResults;
-use App\Filament\Pages\Registration;
+use App\Filament\Admin\Widgets\{UserStatWidget, UserActivityStatWidget};
+use App\Filament\Pages\Auth\{EmailVerification, Login, RequestPasswordReset};
+use App\Filament\Pages\{HealthCheckResults, Registration};
 use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
-use App\Filament\Resources\MenuResource;
-use App\Livewire\MyProfileExtended;
-use App\Livewire\MyProfileExtendedUniversity;
+use App\Livewire\{MyProfileExtended, MyProfileExtendedUniversity};
 use App\Settings\GeneralSettings;
-use Croustibat\FilamentJobsMonitor\FilamentJobsMonitorPlugin;
 use Filament\Enums\ThemeMode;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation;
+use Filament\Http\Middleware\{Authenticate, DisableBladeIconComponents, DispatchServingFilamentEvent};
 use Filament\Navigation\UserMenuItem;
-use Filament\Pages;
-use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
+use Filament\{Pages, Panel, PanelProvider, Widgets};
+use Illuminate\Cookie\Middleware\{AddQueuedCookiesToResponse, EncryptCookies};
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Navigation\NavigationGroup;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
@@ -94,6 +83,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                UserStatWidget::class,
+                UserActivityStatWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -151,7 +142,6 @@ class AdminPanelProvider extends PanelProvider
                     ]),
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
                 \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make()
-                    ->navigationGroup(fn() => __('menu.nav_group.activities'))
                     ->usingPage(HealthCheckResults::class)
                     ->authorize(fn(): bool => Auth::user()?->hasRole('super_admin')),
                 \RickDBCN\FilamentEmail\FilamentEmail::make(),

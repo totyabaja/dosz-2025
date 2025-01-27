@@ -83,7 +83,7 @@ class ScientificFieldResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('default');
+        return __('menu.nav_group.settings');
     }
 
     public static function getNavigationSort(): ?int

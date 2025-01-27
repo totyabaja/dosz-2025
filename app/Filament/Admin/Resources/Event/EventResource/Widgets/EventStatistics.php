@@ -109,13 +109,6 @@ class EventStatistics extends ChartWidget
 
     protected function getType(): string
     {
-        $activeFilter = $this->filter;
-
-        switch ($activeFilter) {
-            case 'reg-num':
-                return 'line';
-            default:
-                return 'pie';
-        }
+        return $this->filter === 'reg-num' ? 'line' : 'pie';
     }
 }

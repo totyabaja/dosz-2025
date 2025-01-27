@@ -24,8 +24,8 @@ return [
     ],
 
     'panel_user' => [
-        'enabled' => false,
-        'name' => 'panel_user',
+        'enabled' => false, // ha autoamtikusan szeretném mindenkihez regeltetn, akkor true
+        'name' => 'user',
     ],
 
     'permission_prefixes' => [
@@ -68,7 +68,8 @@ return [
         ],
 
         'widgets' => [
-            'AccountWidget', 'FilamentInfoWidget',
+            'AccountWidget',
+            'FilamentInfoWidget',
         ],
 
         'resources' => [],

@@ -2,31 +2,20 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\EmailVerification;
-use App\Filament\Pages\Auth\Login;
-use App\Filament\Pages\Auth\RequestPasswordReset;
-use App\Filament\Pages\Registration;
+use App\Filament\Admin\Widgets\{UserStatWidget, UserActivityStatWidget};
+use App\Filament\Pages\Auth\{EmailVerification, Login, RequestPasswordReset};
+use App\Filament\Pages\{HealthCheckResults, Registration};
+use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
+use App\Livewire\{MyProfileExtended, MyProfileExtendedUniversity};
+use Filament\Http\Middleware\{Authenticate, DisableBladeIconComponents, DispatchServingFilamentEvent};
 use App\Filament\ToAdmin\Widgets\DepartmentInfoWidget;
-use App\Livewire\MyProfileExtended;
-use App\Livewire\MyProfileExtendedUniversity;
 use App\Settings\GeneralSettings;
-use Closure;
+use Illuminate\Cookie\Middleware\{AddQueuedCookiesToResponse, EncryptCookies};
 use Filament\Enums\ThemeMode;
-use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\UserMenuItem;
-use Filament\Pages;
-use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Support\Facades\FilamentView;
+use Filament\{Pages, Panel, PanelProvider, Widgets};
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets;
-use Illuminate\Contracts\View\View;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
@@ -107,6 +96,22 @@ class ToAdminPanelProvider extends PanelProvider
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
                     ->allowSubFolders()
                     ->allowUserAccess(),
+                /*\BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+                    ->gridColumns([
+                        'default' => 2,
+                        'sm' => 1
+                    ])
+                    ->sectionColumnSpan(1)
+                    ->checkboxListColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                        'lg' => 3,
+                    ])
+                    ->resourceCheckboxListColumns([
+                        'default' => 1,
+                        'sm' => 2,
+                    ]),
+                */
                 \Jeffgreco13\FilamentBreezy\BreezyCore::make()
                     ->myProfile(
                         shouldRegisterUserMenu: true,

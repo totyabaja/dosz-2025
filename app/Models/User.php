@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scientific;
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
@@ -30,6 +31,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     use HasUuids, HasRoles;
     use HasApiTokens, HasFactory, Notifiable;
     use TwoFactorAuthenticatable;
+    use HasPanelShield;
 
     /**
      * The attributes that are mass assignable.
@@ -72,6 +74,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected static function booted(): void
+    {
+        parent::booted();
+        static::created(function (User $user) {
+            $user->assignRole('user');
+        });
+    }
 
     public function getFilamentName(): string
     {

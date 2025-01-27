@@ -295,4 +295,14 @@ class CustomFormResource extends Resource
             'edit' => Pages\EditCustomForm::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('menu.nav_group.content');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 0;
+    }
 }

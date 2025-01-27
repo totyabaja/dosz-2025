@@ -16,6 +16,6 @@ class HealthCheckResults extends BaseHealthCheckResults
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Core';
+        return __('menu.nav_group.activities');
     }
 }

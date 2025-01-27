@@ -91,6 +91,7 @@ class ManageEventDocuments extends Page implements HasTable
                         //dd($data, $livewiregetFormComponentFileAttachmentUrl);
                         $event = $livewire->record; // Ensure we have the correct Event model
 
+                        // TODO: nem működik itt, ert ez egy array...
                         if (!empty($data['event-documents'])) {
                             foreach ($data['event-documents'] as $file) {
                                 //dd($file);
