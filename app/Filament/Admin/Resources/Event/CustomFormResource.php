@@ -112,9 +112,14 @@ class CustomFormResource extends Resource
                                 Forms\Components\Repeater::make('options')
                                     ->required()
                                     ->columnSpanFull()
+                                    ->columns(3)
                                     ->schema([
+                                        Forms\Components\TextInput::make('id')
+                                            ->disabledOn('edit')
+                                            ->afterStateHydrated(fn($state) => Str::slug($state)),
                                         Forms\Components\TextInput::make('value')
-                                            ->label('érték'),
+                                            ->label('érték')
+                                            ->columnSpan(2),
                                     ])
                                     ->minItems(1)
                                     ->itemLabel('opció'),
@@ -198,7 +203,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('File Upload'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Checkbox'));
+                                return $state['title'] ?? mb_ucfirst(__('File Upload'));
                             }),
                         Forms\Components\Builder\Block::make('rich_editor')
                             ->icon('fas-file-word')

@@ -12,4 +12,6 @@ return [
     'nav_group.settings' => 'Settings',
     'nav_group.activities' => 'Activities',
     'nav_group.content' => 'Content',
+    'login' => 'Login',
+    'logout' => 'Logout',
 ];

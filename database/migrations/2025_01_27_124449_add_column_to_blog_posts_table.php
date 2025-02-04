@@ -28,6 +28,7 @@ return new class extends Migration
         Schema::table('blog_posts', function (Blueprint $table) {
             $table->dropForeign(['scientific_department_id']);
             $table->dropColumn('scientific_department_id');
+            $table->dropSoftDeletes();
         });
     }
 };

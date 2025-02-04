@@ -7,12 +7,12 @@ use App\Models\Blog;
 use App\Models\Event;
 use App\Models\Scientific;
 use App\Models\Aid;
-use App\Models\Page;
+use App\Models\Menu;
 use App\Models\ScientificDepartment;
 use Illuminate\Http\Request;
-use App\Models\ModifiedModels\Folder;
 use App\Models\Scientific\ScientificDepartment as ScientificScientificDepartment;
-use TomatoPHP\FilamentMediaManager\Models\Media;
+use Illuminate\Support\Facades\Auth;
+use TotyaDev\TotyaDevMediaManager\Models\{Folder, Media};
 
 class PublicPageController extends Controller
 {
@@ -20,6 +20,7 @@ class PublicPageController extends Controller
     {
         $slides = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
+            ->whereNull('scientific_department_id')
             ->latest()
             ->paginate(3);
         // $rendezvenyek = Post::query()->latest()->paginate(3);
@@ -29,7 +30,7 @@ class PublicPageController extends Controller
 
     public function show($slug)
     {
-        $page = Page::where('slug', $slug)
+        $page = Menu\Page::where('slug', $slug)
             ->orderBy('version', 'desc')
             ->firstOrFail();
 
@@ -39,7 +40,7 @@ class PublicPageController extends Controller
     // TODO
     public function to_show($to_slug, $slug)
     {
-        $page = Page::where('slug', $slug)
+        $page = Menu\Page::where('slug', $slug)
             ->orderBy('version', 'desc')
             ->firstOrFail();
 
@@ -51,7 +52,8 @@ class PublicPageController extends Controller
         $hirek = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->whereNull('scientific_department_id')
-            ->get();
+            ->orderByDesc('created_at')
+            ->paginate(12);
 
         return view('filament.pages.public.hirek', compact('hirek'));
     }
@@ -178,8 +180,6 @@ class PublicPageController extends Controller
             ->where('collection', $folder)
             ->first();
 
-        //dd($main_folder);
-
         $medium = Media::query()
             ->where('collection_name', $main_folder->collection)
             ->get();
@@ -188,12 +188,16 @@ class PublicPageController extends Controller
     }
 
     // TODO
-    public function to_dokumentumok($to_slug, ?string $folder = 'publikus-allomanyok')
+    public function to_dokumentumok($to_slug, ?string $folder = null)
     {
-        $main_folder = Folder::query()
-            ->where('is_public', true)
-            ->where('collection', $folder)
-            ->first();
+
+        $main_folder = Scientific\ScientificDepartment::where('slug', $to_slug)->first()?->folders->first();
+
+        if ($folder)
+            $main_folder = Folder::query()
+                ->where('is_public', true)
+                ->where('collection', $folder)
+                ->first();
 
         $medium = Media::query()
             ->where('collection_name', $main_folder->collection)

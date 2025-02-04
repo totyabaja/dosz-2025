@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
+use App\Models\Menu\Menu;
 use App\Models\User;
-use Datlechin\FilamentMenuBuilder\Models\Menu;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MenuPolicy

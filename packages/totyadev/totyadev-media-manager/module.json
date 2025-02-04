@@ -1,0 +1,22 @@
+{
+    "name": "TotyaDevMediaManager",
+    "alias": "totyadev-media-manager",
+    "description": {
+        "en": "Manage your media files using spatie media library with easy to use GUI for FilamentPHP"
+    },
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "TotyaDev\\TotyaDevMediaManager\\TotyaDevMediaManagerServiceProvider"
+    ],
+    "files": [],
+    "title": {
+        "en": "TotyaDev Media Manager"
+    },
+    "color": "#cc1448",
+    "icon": "heroicon-c-photo",
+    "type": "plugin",
+    "version": "v1.1.3",
+    "github" : "",
+    "docs" : ""
+}

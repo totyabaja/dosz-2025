@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Event\EventRegistration;
 use App\Models\Scientific;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Filament\Models\Contracts\FilamentUser;
@@ -24,10 +25,12 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
+use TotyaDev\TotyaDevMediaManager\Traits\InteractsWithMediaFolders;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail, HasAvatar, HasName, HasMedia
 {
     use InteractsWithMedia;
+    use InteractsWithMediaFolders;
     use HasUuids, HasRoles;
     use HasApiTokens, HasFactory, Notifiable;
     use TwoFactorAuthenticatable;
@@ -112,7 +115,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->getMedia('avatars')?->first()?->getUrl() ?? $this->getMedia('avatars')?->first()?->getUrl('thumb') ?? null;
+        return $this->getMedia('user-avatars')?->first()?->getUrl() ?? $this->getMedia('user-avatars')?->first()?->getUrl('thumb') ?? null;
     }
 
     public function onlyNativeUser(): bool
@@ -199,5 +202,10 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     public function currentDepartment(): ?Scientific\ScientificDepartment
     {
         return Scientific\ScientificDepartment::find(session()->get('sd_selected', null));
+    }
+
+    public function event_registrations(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class);
     }
 }

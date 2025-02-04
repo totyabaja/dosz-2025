@@ -30,9 +30,30 @@
                 ],
             ],
         ],
-        (object) ['route' => 'public.to.hirek', 'name' => 'Hírek', 'subs' => []],
-        (object) ['route' => 'public.to.rendezvenyek', 'name' => 'Rendezvények', 'subs' => []],
-        (object) ['route' => 'public.to.dokumentumok', 'name' => 'Dokumentumok', 'subs' => []],
+        (object) [
+            'route' => 'public.to.hirek',
+            'name' => 'Hírek',
+            'params' => [
+                'to_slug' => $to->slug,
+            ],
+            'subs' => [],
+        ],
+        (object) [
+            'route' => 'public.to.rendezvenyek',
+            'name' => 'Rendezvények',
+            'params' => [
+                'to_slug' => $to->slug,
+            ],
+            'subs' => [],
+        ],
+        (object) [
+            'route' => 'public.to.dokumentumok',
+            'name' => 'Dokumentumok',
+            'params' => [
+                'to_slug' => $to->slug,
+            ],
+            'subs' => [],
+        ],
     ];
 
     $userMenuItems = [
@@ -169,8 +190,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //-->
                                         </div>
                                     </div>
                                     <div>

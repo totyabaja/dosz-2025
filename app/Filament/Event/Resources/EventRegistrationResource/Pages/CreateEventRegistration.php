@@ -19,6 +19,7 @@ class CreateEventRegistration extends CreateRecord
     protected function beforeFill(): void
     {
         $slug = Request::route('eventslug'); // Slug kinyerése az útvonalból
+
         $this->event = Event::where('slug', $slug)->firstOrFail();
 
         $prev_reg = EventRegistration::query()
@@ -39,7 +40,13 @@ class CreateEventRegistration extends CreateRecord
             'user_id' => Auth::id(),
         ]);
 
-        session(['abstract_neccessary' => $this->event->abstract_neccessary]);
+        session(['event_reg-abstract_neccessary' => $this->event->abstract_neccessary]);
+        session(['event_reg-extra_form' => $this->event->reg_form->custom_form ?? null]);
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return $data;
     }
 
     protected function getFormActions(): array

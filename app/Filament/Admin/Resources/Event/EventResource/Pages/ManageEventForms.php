@@ -18,7 +18,7 @@ class ManageEventForms extends ManageRelatedRecords
 
     protected static string $relationship = 'event_custom_forms';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
 
     public static function getNavigationLabel(): string
     {

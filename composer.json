@@ -44,7 +44,7 @@
         "riodwanto/filament-ace-editor": "^1.0",
         "shuvroroy/filament-spatie-laravel-health": "^2.3",
         "stichoza/google-translate-php": "^5.2",
-        "tomatophp/filament-media-manager": "^1.1",
+        "totyadev/totyadev-media-manager": "dev-main",
         "visualbuilder/email-templates": "^3.1",
         "wiebenieuwenhuis/filament-code-editor": "^1.1",
         "z3d0x/filament-logger": "^0.7.2"
@@ -101,5 +101,12 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "type": "path",
+        "url": "packages/totyadev/totyadev-media-manager",
+        "options": {
+            "symlink": true
+        }
+    }]
 }

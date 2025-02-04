@@ -14,7 +14,7 @@ return new class() extends Migration
     public function up()
     {
         Schema::create('blog_posts', function (Blueprint $table) {
-            $table->ulid('id')->primary();
+            $table->uuid('id')->primary();
             $table->foreignUuid('blog_author_id')->constrained('users')->cascadeOnDelete();
             $table->boolean('is_featured')->default(false);
             $table->string('title');

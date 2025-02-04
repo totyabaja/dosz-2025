@@ -27,7 +27,12 @@ class ListPositions extends ListRecords
 
         foreach ($positionTypes as $positionType) {
             $tabs[$positionType->name] = Tab::make()
-                ->modifyQueryUsing(fn($query) => $query->where('id', '=', $positionType->id));
+                ->modifyQueryUsing(
+                    fn($query) => $query
+                        ->wherehas('position_subtype', function ($query) use ($positionType) {
+                            $query->where('position_type_id', '=', $positionType->id);
+                        })
+                );
         }
 
         return $tabs;

@@ -8,20 +8,25 @@ use App\Filament\Admin\Resources\Event\EventResource\Widgets\EventStatistics;
 use App\Models\Event\Event;
 use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Infolists;
+use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
-use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
+use TotyaDev\TotyaDevMediaManager\Form\MediaManagerInput;
 
 class EventResource extends Resource
 {
@@ -29,10 +34,7 @@ class EventResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function getRecordTitleAttribute(): ?string
-    {
-        return 'name.hu';
-    }
+    protected static ?string $recordTitleAttribute = 'event_name';
 
     public static function getModelLabel(): string
     {
@@ -60,17 +62,11 @@ class EventResource extends Resource
                                     ->aside(fn($operation) => $operation == 'create')
                                     ->description('Egy nyelv megadása kötelező. Amennyiben mindkettőt kitölti, mindkét nyelven elérhető lesz a tartalom.')
                                     ->schema([
-                                        MediaManagerInput::make('event-images')
-                                            ->disk('public')
+                                        SpatieMediaLibraryFileUpload::make('filament_avatar_url')
                                             ->hiddenLabel()
-                                            ->schema([
-                                                //
-                                            ])
-                                            ->defaultItems(1)
-                                            ->reorderable(false)
-                                            ->itemLabel('A rendezvény stock fotója')
-                                            ->minItems(1)
-                                            ->maxItems(1)
+                                            ->disk('public')
+                                            ->collection('event-banners')
+                                            ->alignCenter()
                                             ->columnSpanFull(),
 
                                         Forms\Components\Grid::make([
@@ -185,124 +181,25 @@ class EventResource extends Resource
                                             ->visible($operation === 'edit'),
                                     ]),
                             ]),
+
                     ])->columnSpanFull(),
             ]);
     }
 
+
     // TODO: az egészet át kell alakítani
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist->schema([
-            Infolists\Components\Tabs::make()
-                ->contained(false)
-                ->persistTabInQueryString('event-tabs')
-                ->schema([
-                    Infolists\Components\Tabs\Tab::make('Infók')
-                        ->icon('heroicon-o-information-circle')
-                        ->schema([
 
-                            Infolists\Components\Section::make('Infók')
-                                ->schema([
 
-                                    Infolists\Components\ImageEntry::make('filament_avatar_url')
-                                        ->disk('public')
-                                        ->defaultImageUrl(fn($record) => $record->getFilamentAvatarUrl())
-                                        ->height(300),
-
-                                    Infolists\Components\Grid::make([
-                                        'default' => 1,
-                                        'lg' => 2,
-                                    ])->schema([
-
-                                        Infolists\Components\TextEntry::make('name.hu')
-                                            ->label(mb_ucfirst(__('resource.components.name_hungarian')))
-                                            ->inlineLabel(true),
-                                        Infolists\Components\TextEntry::make('name.en')
-                                            ->label(mb_ucfirst(__('resource.components.name_english')))
-                                            ->inlineLabel(true),
-                                        Infolists\Components\TextEntry::make('slug')
-                                            ->label(mb_ucfirst(__('resource.components.slug')))
-                                            ->prefix(fn() => url('/event') . '/')
-                                            ->inlineLabel(true)
-                                            ->copyable(true)
-                                            ->copyMessage('Copied!')
-                                            ->copyMessageDuration(1500)
-                                            ->hint('Másolható')
-                                            ->columnSpanFull(),
-                                    ]),
-                                ]),
-
-                        ]),
-                    Infolists\Components\Tabs\Tab::make('Tartalom')
-                        ->icon('heroicon-o-clock')
-                        ->schema([
-                            Infolists\Components\Tabs::make()
-                                ->persistTabInQueryString(true)
-                                ->schema([
-                                    Infolists\Components\Tabs\Tab::make(mb_ucfirst(__('resource.tabs.hungarian')))->schema([
-                                        // TODO
-                                        Infolists\components\TextEntry::make('description.hu')
-                                            ->label(mb_ucfirst(__('resource.components.description_hungarian')))
-                                            ->columnSpan('full')
-                                            ->html(),
-                                    ]),
-                                    Infolists\Components\Tabs\Tab::make(mb_ucfirst(__('resource.tabs.english')))->schema([
-                                        // TODO
-                                        Infolists\components\TextEntry::make('description.en')
-                                            ->label(mb_ucfirst(__('resource.components.description_english')))
-                                            ->columnSpan('full')
-                                            ->html(),
-                                    ]),
-
-                                ])->columnSpanFull(),
-                        ]),
-                    Infolists\Components\Tabs\Tab::make('Időpontok')
-                        ->icon('heroicon-o-clock')
-                        ->schema([
-                            Infolists\Components\Section::make('Időpontok')
-                                ->aside()
-                                ->description(new HtmlString(<<<'HTML'
-                                            <b>
-                                                Rendezvény időpontja</b>
-                                            <p>
-                                                A rendezvény kezdő és végpontja. Eshetnek egy napra.
-                                            </p>
-                                            <b>Regisztrációs idősáv</b>
-                                            <p>
-                                                A regisztráció lehetőségére nyitva álló időablak.</p>
-                                        HTML))
-                                ->columns([
-                                    'default' => 1,
-                                    'md' => 2,
-                                ])
-                                ->schema([
-                                    Infolists\Components\TextEntry::make('event_start_date')
-                                        ->label(mb_ucfirst(__('resource.components.event_start_date')))
-                                        ->date(),
-                                    Infolists\Components\TextEntry::make('event_end_date')
-                                        ->label(mb_ucfirst(__('resource.components.event_end_date')))
-                                        ->date(),
-                                    Infolists\Components\TextEntry::make('event_registration_start_datetime')
-                                        ->label(mb_ucfirst(__('resource.components.event_registration_start_datetime')))
-                                        ->dateTime(),
-                                    Infolists\Components\TextEntry::make('event_registration_end_datetime')
-                                        ->label(mb_ucfirst(__('resource.components.event_registration_end_datetime')))
-                                        ->dateTime(),
-                                    Infolists\Components\TextEntry::make('event_registration_available')
-                                        ->label(mb_ucfirst(__('resource.components.event_registration_available'))),
-                                    Infolists\Components\TextEntry::make('event_registration_editable')
-                                        ->label(mb_ucfirst(__('resource.components.event_registration_editable'))),
-                                ]),
-                        ]),
-
-                ])->columnSpanFull(),
-        ]);
-    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('filament_avatar_url')
+                    ->label('Image')
+                    ->disk('public')
+                    ->collection('event-banners')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('name')
                     ->label(mb_ucfirst(__('resource.components.title')))
                     ->listWithLineBreaks()
@@ -342,7 +239,6 @@ class EventResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                ...static::customActions(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -352,25 +248,6 @@ class EventResource extends Resource
                 ]),
             ])
             ->recordUrl(fn($record) => EventResource::getUrl('view', ['record' => $record]));
-    }
-
-    public static function customActions(): array
-    {
-        return [
-            Action::make('documentsAction')
-                ->hiddenLabel()
-                ->size('2xl')
-                ->tooltip(mb_ucfirst(__('resource.buttons.documents')))
-                ->icon('heroicon-o-document')
-                ->color('warning')
-                ->form([
-                    ...static::getDocumentsComponents(),
-                ])
-                ->fillForm(fn($record) => [])
-                ->action(function ($data, $record) {
-                    // dd($record->getMedia('event-documents')?->first()?->getUrl());
-                }),
-        ];
     }
 
     public static function getTimepointsComponents(): array
@@ -437,7 +314,13 @@ class EventResource extends Resource
     public static function getDocumentsComponents(): array
     {
         return [
-            MediaManagerInput::make('event-documents')
+            SpatieMediaLibraryFileUpload::make('media')
+                ->hiddenLabel(true)
+                ->collection('event-documents')
+                ->disk('public')
+                ->required()
+                ->multiple(),
+            /*MediaManagerInput::make('event-documents')
                 ->disk('public')
                 ->hiddenLabel(true)
                 ->schema([
@@ -453,6 +336,7 @@ class EventResource extends Resource
                 ->collapsed(true)
                 ->required()
                 ->columnSpanFull(),
+                */
         ];
     }
 
@@ -485,8 +369,8 @@ class EventResource extends Resource
             Pages\EditEvent::class,
             Pages\ManageEventRegistrations::class,
             Pages\ManageEventForms::class,
-            Pages\ManageEventDocuments::class,
             Pages\ManageEventStatisctics::class,
+            Pages\EventDocuments::class,
         ]);
     }
 
@@ -506,8 +390,8 @@ class EventResource extends Resource
             'edit' => Pages\EditEvent::route('/{record}/edit'),
             'registrations' => Pages\ManageEventRegistrations::route('/{record}/registrations'),
             'forms' => Pages\ManageEventForms::route('/{record}/forms'),
-            'documents' => Pages\ManageEventDocuments::route('/{record}/documents'),
-            'statistics' => Pages\ManageEventStatisctics::route('/{record}/statistics')
+            'statistics' => Pages\ManageEventStatisctics::route('/{record}/statistics'),
+            'documents' => pages\EventDocuments::route('/{record}/documents')
         ];
     }
 

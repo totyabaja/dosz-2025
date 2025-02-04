@@ -54,6 +54,10 @@ return [
         'alt_kers' => 'General Questions',
         'job' => 'job',
         'jobs' => 'jobs',
+        'event_registration' => 'Event registration',
+        'event_registrations' => 'Event registrations',
+        'menu' => 'Menu',
+        'menus' => 'Menus',
     ],
 
     'components' => [
@@ -84,6 +88,7 @@ return [
         'firstname' => 'firstname',
         'affiliation' => 'affiliation',
         'email' => 'email',
+        'phone' => 'phone',
         'language' => 'language',
         'title' => 'title',
         'abstract' => 'abstract',

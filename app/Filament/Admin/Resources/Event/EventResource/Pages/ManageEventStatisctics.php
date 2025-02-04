@@ -15,6 +15,8 @@ class ManageEventStatisctics extends Page
 
     protected static string $view = 'filament.admin.resources.event.event-resource.pages.manage-event-statisctics';
 
+    protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
+
     public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);

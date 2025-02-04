@@ -22,7 +22,6 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
 
 class UniversityResource extends Resource
 {

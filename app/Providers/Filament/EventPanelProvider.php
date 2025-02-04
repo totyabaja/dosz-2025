@@ -32,9 +32,10 @@ class EventPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
+            //->default()
             ->id('event')
             ->path('event')
+            ->topNavigation()
             ->login(Login::class)
             ->registration(Registration::class)
             ->defaultThemeMode(ThemeMode::Light)
@@ -75,10 +76,8 @@ class EventPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Event/Widgets'), for: 'App\\Filament\\Event\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
                 EventRegistrationWidget::class,
                 EventRegistrationTable::class,
             ])
@@ -117,9 +116,6 @@ class EventPanelProvider extends PanelProvider
                         'personal_info' => MyProfileExtended::class,
                         'university_info' => MyProfileExtendedUniversity::class,
                     ]),
-                \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
-                    ->allowSubFolders()
-                    ->allowUserAccess(),
 
             ]);
     }

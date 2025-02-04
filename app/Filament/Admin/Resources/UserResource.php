@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserResource\Pages;
+use App\Filament\Admin\Resources\UserResource\RelationManagers\EventRegistrationsRelationManager;
 use App\Models\Scientific\ScientificDepartment;
 use App\Models\User;
 use App\Settings\MailSettings;
@@ -45,7 +46,8 @@ class UserResource extends Resource
                         SpatieMediaLibraryFileUpload::make('media')
                             ->hiddenLabel()
                             ->avatar()
-                            ->collection('avatars')
+                            ->disk('public')
+                            ->collection('user-avatars')
                             ->alignCenter()
                             ->columnSpanFull(),
 
@@ -175,7 +177,9 @@ class UserResource extends Resource
             ->columns([
                 SpatieMediaLibraryImageColumn::make('media')
                     ->label('Avatar')
-                    ->collection('avatars')
+                    ->circular()
+                    ->disk('public')
+                    ->collection('user-avatars')
                     ->wrap(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('name')
@@ -217,7 +221,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EventRegistrationsRelationManager::class,
         ];
     }
 

@@ -9,20 +9,31 @@ class Elnokseg extends Component
 {
     public function render()
     {
+        $position_id = 1;
+
         $members = User::query()
-            ->whereHas('positions', function ($query) {
-                $query->whereNull('end_date')
-                    ->orWhereDate('end_date', '>=', now())
-                    ->whereHas('position_subtype', function ($subQuery) {
-                        $subQuery->where('position_type_id', 1);
+            ->whereHas('positions', function ($query) use ($position_id) {
+                $query
+                    ->where(function ($query) {
+                        $query->whereNull('end_date')
+                            ->orWhereDate('end_date', '>=', now());
+                    })
+                    ->whereHas('position_subtype', function ($subQuery) use ($position_id) {
+                        $subQuery->where('position_type_id', $position_id);
                     });
             })
-            ->with(['positions' => function ($query) {
-                $query->whereNull('end_date')
-                    ->orWhereDate('end_date', '>=', now());
+            ->with(['positions' => function ($query) use ($position_id) {
+                $query
+                    ->where(function ($query) {
+                        $query->whereNull('end_date')
+                            ->orWhereDate('end_date', '>=', now());
+                    })
+                    ->whereHas('position_subtype', function ($subQuery) use ($position_id) {
+                        $subQuery->where('position_type_id', $position_id);
+                    });
             }])
             ->get()
-            ->sortBy(fn ($user) => $user->positions->first()->position_subtype->order);
+            ->sortBy(fn($user) => $user->positions->first()->position_subtype->order);
 
         // TODO: order by posi order
 

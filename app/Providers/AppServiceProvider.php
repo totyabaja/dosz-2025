@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Http\Responses\LoginResponse;
 use App\Http\Responses\LogoutResponse;
 use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse as ContractsLoginResponse;
 use Filament\Tables\Table;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(LogoutResponseContract::class, LogoutResponse::class);
+        $this->app->singleton(ContractsLoginResponse::class, LoginResponse::class);
     }
 
     /**
@@ -73,8 +76,8 @@ class AppServiceProvider extends ServiceProvider
                     ->displayLocale('hu')
                     ->visible(outsidePanels: true)
                     ->outsidePanelRoutes([
-                        'filament.admin.auth.login',
-                        'filament.admin.auth.reg',
+                        'auth.login',
+                        'auth.reg',
                         // Additional custom routes where the switcher should be visible outside panels
                     ])
                     ->outsidePanelPlacement(Placement::TopRight)

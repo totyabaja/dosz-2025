@@ -5,7 +5,10 @@ namespace App\Filament\Admin\Resources\Blog;
 use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Admin\Resources\Blog\PostResource\Pages;
 use App\Models\Blog\Post;
+use App\Models\Scientific\ScientificDepartment;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -17,7 +20,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
-use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
 
 class PostResource extends Resource
 {
@@ -45,12 +47,12 @@ class PostResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Image')
                     ->schema([
-                        MediaManagerInput::make('post-images')
-                            ->disk('public')
+                        SpatieMediaLibraryFileUpload::make('filament_avatar_url')
                             ->hiddenLabel()
-                            ->schema([])
-                            ->defaultItems(1)
-                            ->minItems(1),
+                            ->disk('public')
+                            ->collection('post-banners')
+                            ->alignCenter()
+                            ->columnSpanFull(),
                     ])
                     ->collapsible(),
                 Forms\Components\Section::make()
@@ -72,9 +74,6 @@ class PostResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->unique(Post::class, 'slug', ignoreRecord: true),
-
-                        Forms\Components\Toggle::make('is_featured')
-                            ->required(),
 
                         Forms\Components\Tabs::make()->schema([
                             Forms\Components\Tabs\Tab::make('Magyar')->schema([
@@ -125,8 +124,30 @@ class PostResource extends Resource
 
                         SpatieTagsInput::make('tags')
                             ->splitKeys(['Tab', ',']),
+
+                        Forms\Components\Select::make('scientific_department_id')
+                            ->relationship('scientific_department')
+                            ->options(
+                                fn() =>
+                                ScientificDepartment::all()
+                                    ->sortBy('filament_name')
+                                    ->mapWithKeys(fn($item) => [$item->id => $item->filament_name])
+                            )
+                            ->native(false)
+                            ->searchable()
+                            ->preload(),
                     ])
                     ->columns(2),
+                Forms\Components\Section::make('Dokumentumok')
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('media')
+                            ->hiddenLabel()
+                            ->disk('public')
+                            ->collection('post-documents')
+                            ->alignCenter()
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(),
             ]);
     }
 
@@ -134,14 +155,18 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                SpatieMediaLibraryImageColumn::make('media')->label('Image')
-                    ->collection('post-images')
+                SpatieMediaLibraryImageColumn::make('filament_avatar_url')
+                    ->label('Image')
+                    ->disk('public')
+                    ->collection('post-banners')
                     ->wrap(),
 
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->listWithLineBreaks()
                     ->sortable(),
+
+                Tables\Columns\IconColumn::make('scientific_department_id'),
 
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()
@@ -152,13 +177,6 @@ class PostResource extends Resource
                     ->searchable(['firstname', 'lastname'])
                     ->sortable()
                     ->toggleable(),
-
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->getStateUsing(fn(Post $record): string => $record->published_at?->isPast() ? 'Published' : 'Draft')
-                    ->colors([
-                        'success' => 'Published',
-                    ]),
 
                 Tables\Columns\TextColumn::make('category.name')
                     ->searchable()
@@ -174,6 +192,17 @@ class PostResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\TernaryFilter::make('scientific_department_posts')
+                    ->nullable()
+                    ->default(true)
+                    ->attribute('scientific_department_id')
+                    ->placeholder('All posts')
+                    ->trueLabel('Csak DOSz hírek')
+                    ->falseLabel('Minden hír')
+                    ->queries(
+                        true: fn(Builder $query) => $query->whereNull('scientific_department_id'),
+                        false: fn(Builder $query) => $query->whereNotNull('scientific_department_id'),
+                    ),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('Detail'),

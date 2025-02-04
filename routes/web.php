@@ -19,8 +19,8 @@ Route::get('/', [PublicPageController::class, 'home'])->name('public.home');
 // Fix routok
 Route::get('/jogsegely', [PublicPageController::class, 'jogsegely'])
     ->name('public.jogsegely');
-Route::get('/tok', [PublicPageController::class, 'tok'])
-    ->name('public.tok');
+//Route::get('/tok', [PublicPageController::class, 'tok'])
+//    ->name('public.tok');
 Route::get('/tok/{to_slug}', [PublicPageController::class, 'to'])
     ->where('to_slug', '[a-z0-9-]+')
     ->name('public.to');
@@ -40,10 +40,6 @@ Route::get('/tok/{to_slug}/rendezveny/{slug}', [PublicPageController::class, 'to
     ->where('to_slug', '[a-z0-9-]+')
     ->where('slug', '[a-z0-9-]+')
     ->name('public.to.rendezveny');
-Route::get('/tok/{to_slug}/dokumentumok/{folder?}', [PublicPageController::class, 'dokumentumok'])
-    ->where('to_slug', '[a-z0-9-]+')
-    ->where('folder', '[a-z0-9-]+')
-    ->name('public.to.dokumentumok');
 
 Route::get('/hirek', [PublicPageController::class, 'hirek'])->name('public.hirek');
 Route::get('/hir/{slug}', [PublicPageController::class, 'hir'])->where('slug', '[a-z0-9-]+')->name('public.hir');
@@ -52,7 +48,13 @@ Route::get('/rendezveny/{slug}', [PublicPageController::class, 'rendezveny'])->n
 Route::get('/gyik', [PublicPageController::class, 'gyik'])->name('public.gyik');
 Route::get('/alt-ker', [PublicPageController::class, 'alt_ker'])->name('public.alt_ker');
 Route::get('/alt-ker', [PublicPageController::class, 'alt_ker'])->name('public.alt_ker');
-Route::get('/dokumentumok/{folder?}', [PublicPageController::class, 'dokumentumok'])->where('folder', '[a-z0-9-]+')->name('public.dokumentumok');
+Route::get('/dokumentumok/{folder?}', [PublicPageController::class, 'dokumentumok'])
+    ->where('folder', '[a-z0-9-]+')
+    ->name('public.dokumentumok');
+Route::get('/tok/{to_slug}/dokumentumok/{folder?}', [PublicPageController::class, 'to_dokumentumok'])
+    ->where('to_slug', '[a-z0-9-]+')
+    ->where('folder', '[a-z0-9-]+')
+    ->name('public.to.dokumentumok');
 
 // Dinamikus oldalak slug alapján
 // Route::get('/titkarsag', [PublicPageController::class, 'titkarsag'])->name('public.page.titkarsag');

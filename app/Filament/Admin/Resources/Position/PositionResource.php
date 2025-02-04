@@ -14,6 +14,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 
@@ -21,7 +22,7 @@ class PositionResource extends Resource
 {
     protected static ?string $model = Position::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-person-circle-exclamation';
 
     public static function getModelLabel(): string
     {
@@ -187,29 +188,30 @@ class PositionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('position_subtype.name')
-                    ->listWithLineBreaks()
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('start_date')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->searchable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('scientific_department.short_name.hu')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\Layout\Stack::make([
+                        SpatieMediaLibraryImageColumn::make('user.media')
+                            ->disk('public')
+                            ->collection('user-avatars')
+                            ->circular(),
+                        Tables\Columns\TextColumn::make('user.name'),
+                    ]),
+
+                    Tables\Columns\TextColumn::make('position_subtype.position_type.name')
+                        ->listWithLineBreaks()
+                        ->sortable()
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('position_subtype.name')
+                        ->listWithLineBreaks()
+                        ->sortable()
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('start_date')
+                        ->date()
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('end_date')
+                        ->date()
+                        ->sortable(),
+                ])
             ])
             ->filters([
                 Filter::make('is_active')
@@ -224,8 +226,11 @@ class PositionResource extends Resource
                                 $data['posi_active'],
                                 fn($query, $date) => $query->where(function ($query) {
                                     return $query
-                                        ->whereNull('end_date')
-                                        ->orWhereDate('end_date', '>=', Carbon::now());
+                                        ->where(function ($query) {
+                                            $query
+                                                ->whereNull('end_date')
+                                                ->orWhereDate('end_date', '>=', Carbon::now());
+                                        });
                                 }),
                             );
                     })
@@ -265,7 +270,7 @@ class PositionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('menu.nav_group.settings');
+        return __('menu.nav_group.access');
     }
 
     public static function getNavigationSort(): ?int

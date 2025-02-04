@@ -5,10 +5,11 @@ namespace App\Models\Scientific;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use TomatoPHP\FilamentMediaManager\Traits\InteractsWithMediaFolders;
+use TotyaDev\TotyaDevMediaManager\Traits\InteractsWithMediaFolders;
 
 class ScientificDepartment extends Model implements HasMedia
 {
@@ -19,7 +20,7 @@ class ScientificDepartment extends Model implements HasMedia
     protected $fillable = [
         'name',
         'slug',
-        'is-active'
+        'is_active'
     ];
 
     protected $casts = [
@@ -27,7 +28,7 @@ class ScientificDepartment extends Model implements HasMedia
         'is_active' => 'boolean',
     ];
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'scientific_department_user');
     }
@@ -40,5 +41,10 @@ class ScientificDepartment extends Model implements HasMedia
     public function getFilamentNameAttribute()
     {
         return $this->name[session()->get('locale', 'hu')];
+    }
+
+    public function scopeActive($query)
+    {
+        $query->where('is_active', true);
     }
 }

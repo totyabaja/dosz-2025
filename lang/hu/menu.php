@@ -7,4 +7,6 @@ return [
     'nav_group.settings' => 'Beállítások',
     'nav_group.activities' => 'Aktivitások',
     'nav_group.content' => 'Tartalmak',
+    'login' => 'Bejelentkezés',
+    'logout' => 'Kijelentkezés',
 ];

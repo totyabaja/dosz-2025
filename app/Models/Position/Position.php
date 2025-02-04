@@ -2,6 +2,8 @@
 
 namespace App\Models\Position;
 
+use App\Models\Scientific\ScientificDepartment;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,5 +27,15 @@ class Position extends Model
     public function position_subtype(): BelongsTo
     {
         return $this->belongsTo(PositionSubType::class);
+    }
+
+    function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scientific_department(): BelongsTo
+    {
+        return $this->belongsTo(ScientificDepartment::class);
     }
 }

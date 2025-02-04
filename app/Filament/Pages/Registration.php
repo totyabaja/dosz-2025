@@ -162,7 +162,13 @@ class Registration extends Register
 
             Forms\Components\Select::make('universities')
                 ->label(__('University'))
-                ->options(fn() => University::pluck('full_name', 'id')) // Egyetemek listája
+                ->options(
+                    fn() =>
+                    University::all()
+                        ->sortBy('filament_full_name')
+                        ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name])
+
+                ) // Egyetemek listája
                 ->live() // Figyelje a változást
                 ->searchable()
                 ->preload()
@@ -176,11 +182,16 @@ class Registration extends Register
                 ->options(function (callable $get) {
                     $universityId = $get('universities'); // Kiválasztott egyetem ID-je
                     if (! $universityId) {
-                        return DoctoralSchool::pluck('full_name', 'id'); // Alapértelmezett lista, ha nincs szűrés
+                        return DoctoralSchool::all()
+                            ->sortBy('filament_full_name')
+                            ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name]); // Alapértelmezett lista, ha nincs szűrés
                     }
 
                     // Szűkített lista az adott egyetem alapján
-                    return DoctoralSchool::where('university_id', $universityId)->pluck('full_name', 'id');
+                    return DoctoralSchool::where('university_id', $universityId)
+                        ->get()
+                        ->sortBy('filament_full_name')
+                        ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name]);
                 })
                 ->live()
                 ->searchable()

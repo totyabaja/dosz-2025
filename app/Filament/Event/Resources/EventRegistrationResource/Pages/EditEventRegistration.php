@@ -24,4 +24,18 @@ class EditEventRegistration extends EditRecord
             //
         ];
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        //dd($data);
+        return $data;
+    }
+
+    protected function beforeFill(): void
+    {
+        $event = $this->record->event; // Az esemény lekérése
+
+        session(['event_reg-abstract_neccessary' => $event->abstract_neccessary]);
+        session(['event_reg-extra_form' => $event->reg_form->custom_form ?? null]);
+    }
 }

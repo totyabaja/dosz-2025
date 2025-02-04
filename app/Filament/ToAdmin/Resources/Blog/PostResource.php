@@ -9,6 +9,7 @@ use App\Filament\ToAdmin\Resources\Blog\PostResource\RelationManagers;
 use App\Models\Blog\Post;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,7 +19,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use TomatoPHP\FilamentMediaManager\Form\MediaManagerInput;
 use Illuminate\Support\Str;
 
 class PostResource extends Resource
@@ -35,12 +35,13 @@ class PostResource extends Resource
                     ->required(),
                 Forms\Components\Section::make('Image')
                     ->schema([
-                        MediaManagerInput::make('post-images')
-                            ->disk('public')
+                        SpatieMediaLibraryFileUpload::make('media')
                             ->hiddenLabel()
-                            ->schema([])
-                            ->defaultItems(1)
-                            ->minItems(1),
+                            ->disk('public')
+                            ->collection('post-images')
+                            ->alignCenter()
+                            ->columnSpanFull()
+                            ->multiple(),
                     ])
                     ->collapsible(),
                 Forms\Components\Section::make()

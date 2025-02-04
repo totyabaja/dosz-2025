@@ -47,9 +47,11 @@ class ScientificDepartmentResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('slug')
+                    ->disabledOn(['edit'])
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Toggle::make('is_active')
+                    ->default(true)
                     ->required(),
             ]);
     }
@@ -110,7 +112,18 @@ class ScientificDepartmentResource extends Resource
             'index' => Pages\ListScientificDepartments::route('/'),
             'create' => Pages\CreateScientificDepartment::route('/create'),
             'edit' => Pages\EditScientificDepartment::route('/{record}/edit'),
+            'folders' => Pages\ManageScientificDepartmentFoldersPage::route('/{record}/folders'),
+            //'media' => Pages\ManageScientificDepartmentMedia::route('{record}/media')
         ];
+    }
+
+    public static function getRecordSubNavigation($page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\EditScientificDepartment::class,
+            Pages\ManageScientificDepartmentFoldersPage::class,
+            //ManageScientificDepartmentMedia::class
+        ]);
     }
 
     public static function getEloquentQuery(): Builder

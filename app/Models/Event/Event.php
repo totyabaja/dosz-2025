@@ -8,13 +8,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use TotyaDev\TotyaDevMediaManager\Traits\InteractsWithMediaFolders;
 
 class Event extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes;
     use InteractsWithMedia;
+    use InteractsWithMediaFolders;
 
     protected $fillable = [
         'name',
@@ -58,20 +62,22 @@ class Event extends Model implements HasMedia
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->getMedia('event-images')?->first()?->getUrl() ?? $this->getMedia('event-images')?->first()?->getUrl('thumb') ?? null;
+        return $this->getMedia('event-banners')?->first()?->getUrl() ?? $this->getMedia('event-banners')?->first()?->getUrl('thumb') ?? null;
     }
 
+    // TODO
     public function documents()
     {
-        return $this->media()->where('collection_name', 'event-documents');
+        return $this->getMedia('event-documents');
     }
 
+    // TODO
     public function getEventDocuments()
     {
         return $this->getMedia('event-documents')?->map(function ($item) {
             return [
                 'url' => $item?->getUrl() ?? null,
-                'name' => $item?->custom_properties['label'] ?? null,
+                'name' => $item?->custom_properties['label-' . session()->get('locale', 'hu')] ?? null,
             ];
         });
     }
@@ -100,5 +106,12 @@ class Event extends Model implements HasMedia
     {
         return $this->hasOne(EventCustomForm::class)
             ->where('type', 'reg');
+    }
+
+    public function registerMediaConversions(Media|null $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
     }
 }

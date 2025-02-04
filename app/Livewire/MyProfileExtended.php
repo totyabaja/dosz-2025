@@ -58,10 +58,13 @@ class MyProfileExtended extends MyProfileComponent
     {
         return $form
             ->schema([
-                SpatieMediaLibraryFileUpload::make('media')->label('Avatar')
-                    ->collection('avatars')
+                SpatieMediaLibraryFileUpload::make('media')
+                    ->hiddenLabel()
                     ->avatar()
-                    ->required(),
+                    ->disk('public')
+                    ->collection('user-avatars')
+                    ->alignCenter()
+                    ->columnSpanFull(),
                 Grid::make()->schema([
                     /*TextInput::make('username')
                         ->disabled()

@@ -62,7 +62,7 @@
                         @endswitch
                     </figure>
                     <div class="card-body">
-                        <h5 class="card-title mb-2.5">{{ $media->custom_properties['title'] }}</h5>
+                        <h5 class="card-title mb-2.5">{{ $media->custom_properties['label-hu'] }}</h5>
                         <p class="mb-4">
                             {{ $media->created_at }}
 

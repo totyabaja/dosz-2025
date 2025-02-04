@@ -72,15 +72,15 @@ class MyProfileExtendedUniversity extends MyProfileComponent
                         ->schema([
                             ...Registration::getGeneralFormContent(),
                         ]),
-                    Tabs\Tab::make('Extra')
+                    Tabs\Tab::make(mb_ucfirst(__('reg.menu.extra')))
                         ->schema([
                             ...Registration::getExtraFormContent(),
                         ]),
-                    Tabs\Tab::make('Memberships')
+                    Tabs\Tab::make(mb_ucfirst(__('reg.menu.membership')))
                         ->schema([
                             ...static::getMembershipFormContent(),
                         ]),
-                    Tabs\Tab::make('GDPR')
+                    Tabs\Tab::make(mb_ucfirst(__('reg.menu.gdpr')))
                         ->schema([
                             DateTimePicker::make('adatvedelmit_elfogadta')
                                 ->readOnly()

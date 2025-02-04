@@ -41,18 +41,27 @@ class UserForm
                     ])->schema([
                         Select::make('universities')
                             ->label(__('University'))
-                            ->options(fn() => University::pluck('full_name', 'id')),
+                            ->options(
+                                fn() => University::all()
+                                    ->sortBy('filament_full_name')
+                                    ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name])
+                            ),
 
                         Select::make('doctoral_school_id')
                             ->label(__('Doctoral School'))
                             ->options(function (callable $get) {
                                 $universityId = $get('universities'); // Kiválasztott egyetem ID-je
                                 if (! $universityId) {
-                                    return DoctoralSchool::pluck('full_name', 'id'); // Alapértelmezett lista, ha nincs szűrés
+                                    return DoctoralSchool::all()
+                                        ->sortBy('filament_full_name')
+                                        ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name]); // Alapértelmezett lista, ha nincs szűrés
                                 }
 
                                 // Szűkített lista az adott egyetem alapján
-                                return DoctoralSchool::where('university_id', $universityId)->pluck('full_name', 'id');
+                                return DoctoralSchool::where('university_id', $universityId)
+                                    ->get()
+                                    ->sortBy('filament_full_name')
+                                    ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name]);
                             })
                             ->live()
                             ->searchable()

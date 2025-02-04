@@ -2,10 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Resources\TotyaMedia\Services\FilamentMediaManagerServices;
 use App\Filament\Admin\Widgets\{UserStatWidget, UserActivityStatWidget};
 use App\Filament\Pages\Auth\{EmailVerification, Login, RequestPasswordReset};
 use App\Filament\Pages\{HealthCheckResults, Registration};
 use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
+use App\Filament\Resources\ActivityResource;
 use App\Livewire\{MyProfileExtended, MyProfileExtendedUniversity};
 use App\Settings\GeneralSettings;
 use Filament\Enums\ThemeMode;
@@ -28,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
@@ -71,7 +74,8 @@ class AdminPanelProvider extends PanelProvider
             //->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->resources([
-                config('filament-logger.activity_resource')
+                ActivityResource::class,
+                //config('filament-logger.activity_resource')
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admijn\\Pages')
             ->pages([
@@ -101,7 +105,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
+                \TotyaDev\TotyaDevMediaManager\TotyaDevMediaManagerPlugin::make()
                     ->allowSubFolders()
                     ->allowUserAccess(),
                 \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
@@ -156,6 +160,7 @@ class AdminPanelProvider extends PanelProvider
                     ->enableNavigation(
                         fn() => auth()->user()->can('view_email_templates') || auth()->user()->can('view_any_email_templates)'),
                     ),
+
 
             ]);
     }

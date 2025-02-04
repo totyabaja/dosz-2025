@@ -34,6 +34,10 @@ return [
         'faqs' => 'Gyakran Ismételt Kérdések',
         'alt_ker' => 'Általános kérdés',
         'alt_kers' => 'Általános kérdések',
+        'event_registration' => 'Rendezvény regisztráció',
+        'event_registrations' => 'REndezvény regisztrációk',
+        'menu' => 'Menü',
+        'menus' => 'Menük',
     ],
     'components' => [
         'event_start_date' => 'Rendezvény kezdő napja',

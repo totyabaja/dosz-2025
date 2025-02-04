@@ -4,6 +4,8 @@ namespace App\Filament\Components\Event;
 
 use App\Models\Event\CustomForm;
 use App\Models\Event\Event;
+use App\Models\Event\EventFormResponse;
+use App\Models\Event\EventRegistration;
 use App\Models\Scientific\DoctoralSchool;
 use App\Models\Scientific\University;
 use
@@ -13,19 +15,21 @@ use Illuminate\Support\Facades\Auth;
 
 class ExtraForm
 {
-    public static function schema(?CustomForm $customForm): array
+    public static function schema(CustomForm $customForm, ?EventRegistration $event_reg = null): array
     {
         $content = $customForm->content;
+        $response = EventFormResponse::query()
+            ->where('custom_form_id', $customForm->id)
+            ->where('event_registration_id', $event_reg?->id ?? null)
+            ->first()?->responses ?? null;
 
         // Betöltjük az eddig mentett válaszokat
-        $responses = $record->event_form_response->responses ?? [];
-
-        $attribute_name = 'responses';
+        $attribute_name = 'event_form_response.responses';
 
         $formComponents = [
             // TODO: valamiért nem látja
             Hidden::make('custom_form_id')
-                ->default($custom_form->id ?? "dsd")
+                ->default($customForm->id ?? null)
                 //->dehydrated(false)
                 ->afterStateHydrated(fn($set) => $set('custom_form_id', $customForm->id))
                 ->required(),
@@ -44,11 +48,11 @@ class ExtraForm
                         ->required($data['required'] ?? false)
                         ->hint($data['hint'] ?? null)
                         ->helperText($data['helperText'] ?? null)
-                        ->default($responses['id'] ?? null);
+                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
                     break;
 
                 case 'select':
-                    $options = collect($data['options'] ?? [])->pluck('value', 'value')->toArray();
+                    $options = collect($data['options'] ?? [])->pluck('value', 'id')->toArray();
                     $formComponents[] = Select::make("{$attribute_name}.{$fieldId}")
                         ->label($data['title'] ?? 'N/A')
                         ->options($options)
@@ -58,14 +62,14 @@ class ExtraForm
                         ->hint($data['hint'] ?? null)
                         ->helperText($data['helperText'] ?? null)
                         ->placeholder($data['placeholder'] ?? null)
-                        ->default($responses['id'] ?? null);
+                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
                     break;
 
                 case 'checkbox':
                     $formComponents[] = Checkbox::make("{$attribute_name}.{$fieldId}")
                         ->label($data['title'] ?? 'N/A')
                         ->helperText($data['helperText'] ?? null)
-                        ->default($responses['id'] ?? null);
+                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
                     break;
 
                 case 'radio':
@@ -75,7 +79,7 @@ class ExtraForm
                         ->options($options)
                         ->required($data['required'] ?? false)
                         ->helperText($data['helperText'] ?? null)
-                        ->default($responses['id'] ?? null);
+                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
                     break;
 
                 case 'textarea':
@@ -85,7 +89,7 @@ class ExtraForm
                         ->required($data['required'] ?? false)
                         ->hint($data['hint'] ?? null)
                         ->helperText($data['helperText'] ?? null)
-                        ->default($responses['id'] ?? null);
+                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
                     break;
             }
         }

@@ -1,56 +1,17 @@
 @php
     $settings = app(\App\Settings\GeneralSettings::class);
 
-    $menuItems = [
-        (object) [
-            'route' => 'public.home',
-            'name' => __('resource.title.organization'),
-            'subs' => [
-                (object) ['route' => 'public.pages', 'params' => ['slug' => 'bemutatkozas'], 'name' => 'Bemutatkozás'],
-                (object) ['route' => 'public.pages', 'params' => ['slug' => 'elnokseg'], 'name' => 'Elnökség'],
-                (object) [
-                    'route' => 'public.pages',
-                    'params' => ['slug' => 'felugyelo-bizottsag'],
-                    'name' => 'Felügyelő bizottság',
-                ],
-                (object) [
-                    'route' => 'public.pages',
-                    'params' => ['slug' => 'titkarsag'],
-                    'name' => 'Titkárság',
-                ],
-                (object) [
-                    'route' => 'public.pages',
-                    'params' => ['slug' => 'kuldottgyules'],
-                    'name' => 'Küldöttgyűlés',
-                ],
-                (object) [
-                    'route' => 'public.pages',
-                    'params' => ['slug' => 'dokok'],
-                    'name' => 'Doktorandusz önkormányzatok',
-                ],
-                (object) [
-                    'route' => 'public.pages',
-                    'params' => ['slug' => 'tiszteletbeli-elnokok'],
-                    'name' => 'Tiszteletbeli elnökök',
-                ],
-                (object) ['route' => 'public.pages', 'params' => ['slug' => 'dijazottak'], 'name' => 'Díjazottak'],
-            ],
-        ],
-        (object) ['route' => 'public.hirek', 'name' => __('resource.title.posts'), 'subs' => []],
-        (object) ['route' => 'public.rendezvenyek', 'name' => __('resource.title.events'), 'subs' => []],
-        (object) ['route' => 'public.tok', 'name' => __('resource.title.tok'), 'subs' => []],
-        (object) ['route' => 'public.jogsegely', 'name' => __('resource.title.legal_aid'), 'subs' => []],
-        (object) ['route' => 'public.dokumentumok', 'name' => __('resource.title.documents'), 'subs' => []],
-    ];
+    $menuItems = \App\Models\Menu\PublicMenu::getTree('dosz-header-menu');
+    //dd($menuItems);
 
     $userMenuItems = [
-        (object) ['name' => 'Profilom', 'route' => 'filament.admin.pages.my-profile'],
+        (object) ['name' => 'Profilom', 'route' => 'filament.event.pages.my-profile'],
         //(object) ['name' => 'Rendezvényeim', 'route' => 'filament.admin.pages.my-events'],
         //(object) ['name' => 'Rendezvényeim', 'route' => 'filament.event.pages.dashboard'],
     ];
 @endphp
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="ltr" class="min-h-screen fi" data-theme="light">
+<html lang="{{ session()->get('locale', 'hu') }}" dir="ltr" class="min-h-screen fi" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -65,7 +26,6 @@
 <body class="min-h-screen antialiased font-normal fi-body fi-panel-public bg-gray-50 text-gray-950">
     <div class="flex flex-row-reverse w-full min-h-screen fi-layout overflow-x-clip">
         <div class="flex flex-col flex-1 w-screen mx-auto fi-main-ctn max-w-7xl">
-
             <!-- Felső sáv START-->
             <div class="top-0 z-50 hidden py-2 text-sm bg-gray-100 md:block">
                 <div class="flex items-center justify-between px-4">
@@ -95,6 +55,7 @@
                             <a href="https://m2.mtmt.hu">MTMT.HU</a>
                         </div>
                     </span>
+                    {{-- dd(trans('resource.title.organization')) --}}
                     <span class="flex items-end space-x-6 text-gray-600">
                         <livewire:language-switch />
                     </span>
@@ -139,7 +100,9 @@
                                         </ul>
                                     </li>
                                 @else
-                                    <li><a href="{{ route($menuItem->route) }}">{{ $menuItem->name }}</a></li>
+                                    <li><a
+                                            href="{{ route($menuItem->route, $menuItem->params) }}">{{ $menuItem->name }}</a>
+                                    </li>
                                 @endif
                             @endforeach
                         </ul>
@@ -149,8 +112,8 @@
                     <div class="items-center hidden gap-4 navbar-end md:flex">
 
                         @guest
-                            <a href="{{ route('filament.admin.auth.login') }}"
-                                class="block p-2 mt-6 text-center text-white rounded bg-primary">Bejelentkezés</a>
+                            <a href="{{ route('filament.event.auth.login') }}"
+                                class="block p-2 mt-6 text-center text-white rounded bg-primary">{{ __('menu.login') }}</a>
                         @endguest
                     </div>
 
@@ -176,8 +139,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //-->
                                         </div>
                                     </div>
                                     <div>
@@ -188,7 +151,7 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('filament.admin.pages.my-profile') }}">
+                                    <a class="dropdown-item" href="{{ route('filament.event.pages.my-profile') }}">
                                         <span class="icon-[tabler--user]"></span>
                                         Profilom
                                     </a>
@@ -208,10 +171,10 @@
                                 <li class="gap-2 dropdown-footer">
                                     <button class="btn btn-error btn-soft btn-block" form="logoutForm">
                                         <span class="icon-[tabler--logout]"></span>
-                                        Kijelentkezés
+                                        {{ __('menu.logout') }}
                                         </buttom>
                                         <form id="logoutForm" method="POST"
-                                            action="{{ route('filament.admin.auth.logout') }}" hidden>
+                                            action="{{ route('filament.event.auth.logout') }}" hidden>
                                             @csrf
                                             @method('POST')
                                         </form>
@@ -265,7 +228,7 @@
                                         </li>
                                     @else
                                         <li>
-                                            <a href="{{ route($menuItem->route) }}">
+                                            <a href="{{ route($menuItem->route, $subMenuItem->params) }}">
                                                 <span class="icon-[tabler--home] size-5"></span>
                                                 {{ $menuItem->name }}
                                             </a>
@@ -298,7 +261,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('filament.admin.auth.logout') }}">
+                                        <a href="{{ route('filament.event.auth.logout') }}">
                                             <span class="icon-[tabler--logout-2] size-5"></span>
                                             Kijelentkezés
                                         </a>

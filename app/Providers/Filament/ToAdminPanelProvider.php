@@ -15,6 +15,7 @@ use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Navigation\UserMenuItem;
 use Filament\{Pages, Panel, PanelProvider, Widgets};
+use Filament\Navigation\NavigationItem;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -71,6 +72,7 @@ class ToAdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/ToAdmin/Pages'), for: 'App\\Filament\\ToAdmin\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+
             ])
             ->discoverWidgets(in: app_path('Filament/ToAdmin/Widgets'), for: 'App\\Filament\\ToAdmin\\Widgets')
             ->widgets([
@@ -93,9 +95,7 @@ class ToAdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
-                    ->allowSubFolders()
-                    ->allowUserAccess(),
+
                 /*\BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
                     ->gridColumns([
                         'default' => 2,

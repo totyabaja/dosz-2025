@@ -5,6 +5,7 @@ namespace App\Filament\Event\Resources;
 use App\Filament\Event\Resources\EventRegistrationResource\Pages;
 use App\Filament\Event\Resources\EventRegistrationResource\RelationManagers;
 use App\Models\Event\EventRegistration;
+use Filament\Infolists;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,7 +16,12 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use App\Filament\Components\Event;
+use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
+use CodeWithDennis\SimpleAlert\Components\Infolists\SimpleAlert as InfolistsSimpleAlert;
+use Filament\Forms\Get;
+use Filament\Infolists\Infolist;
 use Filament\Tables\Actions\Action;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class EventRegistrationResource extends Resource
@@ -30,6 +36,29 @@ class EventRegistrationResource extends Resource
             ->where('user_id', Auth::id())
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Tabs::make()
+                    ->schema(fn($record) => [
+
+                        Infolists\Components\Tabs\Tab::make('Számlázási adatok')
+                            ->schema([
+                                InfolistsSimpleAlert::make('billing-info')
+                                    ->danger()
+                                    ->description(new HtmlString(
+                                        'A számlázási adatok helyességéért te felelsz. <b>A helytelen adatok megadása miatti számlázási hibákért nem tudunk felelősséget vállalni. A jelentkezési határidő lezárultát követően nincs lehetőség a számlázási adatok módosítására.</b>'
+                                    )),
+                                ...Event\BillingInfolist::schema(),
+                            ]),
+                        ...static::publicationNecessaryView(),
+                        ...static::extraFormView($record),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -55,15 +84,15 @@ class EventRegistrationResource extends Resource
                             ]),
                         Forms\Components\Wizard\Step::make('Számlázási adatok')
                             ->schema([
-                                Forms\Components\Placeholder::make(__('Információ'))
-                                    ->hiddenLabel(true)
-                                    ->content(new HtmlString(
+                                SimpleAlert::make('billing-info')
+                                    ->danger()
+                                    ->description(new HtmlString(
                                         'A számlázási adatok helyességéért te felelsz. <b>A helytelen adatok megadása miatti számlázási hibákért nem tudunk felelősséget vállalni. A jelentkezési határidő lezárultát követően nincs lehetőség a számlázási adatok módosítására.</b>'
                                     )),
                                 ...Event\BillingForm::schema(),
                             ]),
                         ...static::publicationNecessary(),
-                        ...static::extraForm(),
+                        ...static::extraForm($get, $record),
                         Forms\Components\Wizard\Step::make('Extra')
                             ->schema([
                                 Forms\Components\Toggle::make('adatkezelesi')
@@ -130,7 +159,8 @@ class EventRegistrationResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(fn($record): bool => $record->event->event_registration_editable),
-                Tables\actions\DeleteAction::make(),
+                Tables\actions\DeleteAction::make()
+                    ->visible(fn($record): bool => $record->event->event_registration_editable),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -146,9 +176,19 @@ class EventRegistrationResource extends Resource
         ];
     }
 
+    protected static function publicationNecessaryView(): array
+    {
+        return session()->get('event_reg-abstract_neccessary', false)
+            ? [Infolists\Components\Tabs\Tab::make('Publikációk')
+                ->schema([
+                    ...Event\PublicationInfolist::schema(),
+                ])]
+            : [];
+    }
+
     protected static function publicationNecessary(): array
     {
-        return session()->get('abstract_neccessary', false)
+        return session()->get('event_reg-abstract_neccessary', false)
             ? [Forms\Components\Wizard\Step::make('Publikációk')
                 ->schema([
                     ...Event\PublicationForm::schema(),
@@ -156,20 +196,33 @@ class EventRegistrationResource extends Resource
             : [];
     }
 
-    protected static function extraForm(): array
+    protected static function extraForm(Get $get, ?EventRegistration $record): array
     {
-        // TODO: azt kell csekkolni, hogy van-e extra form
-        $custom_form = \App\Models\Event\Event::where('slug', request()->eventslug)->first()?->reg_form->custom_form ?? null;
-
-        //dd(request()->eventslug, \App\Models\Event\Event::where('slug', request()->eventslug)->get());
+        $custom_form = session()->get('event_reg-extra_form', false);
 
         return
             $custom_form
-            ? [Forms\Components\Wizard\Step::make('További kérdések')
+            ?
+            [Forms\Components\Wizard\Step::make('További kérdések')
                 ->schema([
-                    ...Event\ExtraForm::schema($custom_form),
+                    ...Event\ExtraForm::schema($custom_form, $record),
                 ])]
-            : [];;
+            : [];
+    }
+
+    protected static function extraFormView(EventRegistration $record): array
+    {
+        $custom_form = $record->event->reg_form->custom_form;
+        $custom_form_response = $record->event_form_response;
+
+        return
+            $custom_form
+            ?
+            [Infolists\Components\Tabs\Tab::make('További kérdések')
+                ->schema([
+                    ...Event\ExtraFormView::schema($custom_form, $custom_form_response),
+                ])]
+            : [];
     }
 
     protected static function userInfos($set)
@@ -203,5 +256,15 @@ class EventRegistrationResource extends Resource
             'view' => Pages\ViewEventRegistration::route('/{record}'),
             'edit' => Pages\EditEventRegistration::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('resource.title.event_registration');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resource.title.event_registration');
     }
 }

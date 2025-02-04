@@ -15,6 +15,11 @@ class EventRegistrationWidget extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
+    protected function getTableHeading(): string
+    {
+        return __('Események, amelykre várjuk jelentkezésedet');
+    }
+
     protected static ?int $sort = -2;
 
     public function table(Table $table): Table
@@ -32,8 +37,9 @@ class EventRegistrationWidget extends BaseWidget
                                 ->columns(1)
                                 ->schema([
                                     SpatieMediaLibraryImageColumn::make('media')
-                                        ->collection('event-images')
+                                        ->collection('event-banners')
                                         ->height(150)
+                                        ->width(300)
                                         ->wrap()
                                         ->extraImgAttributes([
                                             'class' => 'rounded-md',

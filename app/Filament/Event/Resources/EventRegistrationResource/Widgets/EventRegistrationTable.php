@@ -19,7 +19,10 @@ class EventRegistrationTable extends TableWidget
 
     protected static ?int $sort = -1;
 
-    //protected static string $view = 'filament.event.resources.event-registration-resource.widgets.event-registration-table';
+    protected function getTableHeading(): string
+    {
+        return __('Aktív regisztrációid');
+    }
 
     public function table(Table $table): Table
     {
@@ -30,6 +33,7 @@ class EventRegistrationTable extends TableWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('event.name')
+                    ->listWithLineBreaks()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
