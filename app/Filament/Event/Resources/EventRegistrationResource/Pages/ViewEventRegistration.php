@@ -21,13 +21,13 @@ class ViewEventRegistration extends ViewRecord
         ];
     }
 
-    protected function beforeFill(): void
+    /*protected function beforeFill(): void
     {
         $event = $this->record->event; // Az esemény lekérése
 
         session(['event_reg-abstract_neccessary' => $event->abstract_neccessary]);
         session(['event_reg-extra_form' => $event->reg_form->custom_form ?? null]);
-    }
+    }*/
 
     /*protected function afterFill(): void
     {

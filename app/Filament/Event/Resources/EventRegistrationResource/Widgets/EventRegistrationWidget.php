@@ -50,7 +50,7 @@ class EventRegistrationWidget extends BaseWidget
                                 Tables\Columns\TextColumn::make('eventName')
                                     ->weight(FontWeight::Medium),
                                 Tables\Columns\TextColumn::make('event_start_date'),
-                                Tables\Columns\TextColumn::make('reg')
+                                Tables\Columns\TextColumn::make('new-reg')
                                     ->default(fn($record) => new HtmlString(
                                         Blade::render(
                                             '<x-filament::button

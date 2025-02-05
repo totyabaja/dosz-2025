@@ -3,6 +3,7 @@
 namespace App\Filament\Event\Resources\EventRegistrationResource\Pages;
 
 use App\Filament\Event\Resources\EventRegistrationResource;
+use App\Models\Event\EventRegistrationStatus;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -27,15 +28,17 @@ class EditEventRegistration extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        //dd($data);
+        $data['accepted_data_protection'] = $data['adatkezelesi'] ? now()->format('Y-m-d H:i:s') : null;
+        $data['accepted_data_use'] = $data['hozzajarulas'] ?  now()->format('Y-m-d H:i:s') : null;
+
         return $data;
     }
 
-    protected function beforeFill(): void
+    protected function afterSave(): void
     {
-        $event = $this->record->event; // Az esemény lekérése
-
-        session(['event_reg-abstract_neccessary' => $event->abstract_neccessary]);
-        session(['event_reg-extra_form' => $event->reg_form->custom_form ?? null]);
+        EventRegistrationStatus::create([
+            'event_registration_id' => $this->record->id,
+            'event_status_id' => 0,
+        ]);
     }
 }

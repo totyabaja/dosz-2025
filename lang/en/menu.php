@@ -12,6 +12,7 @@ return [
     'nav_group.settings' => 'Settings',
     'nav_group.activities' => 'Activities',
     'nav_group.content' => 'Content',
+    'nav_group.legal_aid' => 'Legal Aid',
     'login' => 'Login',
     'logout' => 'Logout',
 ];

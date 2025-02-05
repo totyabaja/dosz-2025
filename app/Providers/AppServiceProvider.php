@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Filament\ModifiedResources\ActivityResource;
+use App\Filament\ModifiedResources\EmailResource;
+use App\Filament\ModifiedResources\ExceptionResource;
 use App\Http\Responses\LoginResponse;
 use App\Http\Responses\LogoutResponse;
+use BezhanSalleh\FilamentExceptions\Resources\ExceptionResource as BaseExceptionResource;
 use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Facades\Filament;
@@ -19,6 +23,9 @@ use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
+use Filament\Resources\Resource;
+use RickDBCN\FilamentEmail\Filament\Resources\EmailResource as BaseEmailResource;
+use Z3d0X\FilamentLogger\Resources\ActivityResource as BaseActivityResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +36,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(LogoutResponseContract::class, LogoutResponse::class);
         $this->app->singleton(ContractsLoginResponse::class, LoginResponse::class);
+
+        $this->app->bind(BaseExceptionResource::class, ExceptionResource::class);
+        $this->app->bind(BaseActivityResource::class, ActivityResource::class);
+        $this->app->bind(BaseEmailResource::class, EmailResource::class);
     }
 
     /**

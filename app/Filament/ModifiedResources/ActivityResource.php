@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\ModifiedResources;
 
-use Filament\Facades\Filament;
-use Illuminate\Contracts\Support\Htmlable;
 use Z3d0X\FilamentLogger\Resources\ActivityResource as BaseActivityResource;
-use Illuminate\Support\Str;
 
 class ActivityResource extends BaseActivityResource
 {

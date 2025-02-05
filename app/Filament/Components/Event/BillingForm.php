@@ -56,11 +56,11 @@ class BillingForm
                         ->datalist([
                             'Magyarország',
                         ])
+                        ->default('Magyarország')
                         ->columnSpan([
                             'default' => 1,
                             'md' => 2,
                         ])
-                        ->default('Magyarország')
                         ->required(),
                     TextInput::make('event_invoice_address.address_city')
                         ->label(__('resource.components.city'))

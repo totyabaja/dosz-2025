@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use App\Filament\Components\Event;
+use App\Models\Position\Position;
 use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
 use CodeWithDennis\SimpleAlert\Components\Infolists\SimpleAlert as InfolistsSimpleAlert;
 use Filament\Forms\Get;
@@ -48,14 +49,28 @@ class EventRegistrationResource extends Resource
 
                         Infolists\Components\Tabs\Tab::make('Számlázási adatok')
                             ->schema([
+                                ...Event\UserInfolist::schema(),
                                 InfolistsSimpleAlert::make('billing-info')
                                     ->danger()
                                     ->description(new HtmlString(
                                         'A számlázási adatok helyességéért te felelsz. <b>A helytelen adatok megadása miatti számlázási hibákért nem tudunk felelősséget vállalni. A jelentkezési határidő lezárultát követően nincs lehetőség a számlázási adatok módosítására.</b>'
                                     )),
                                 ...Event\BillingInfolist::schema(),
+                                Infolists\Components\TextEntry::make('accepted_data_protection')
+                                    ->hiddenLabel()
+                                    ->formatStateUsing(fn() => '.....')
+                                    ->iconPosition('before')
+                                    ->icon(fn($state) => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
+                                    ->iconColor(fn($state) => $state ? 'success' : 'danger'),
+
+                                Infolists\Components\TextEntry::make('accepted_data_use')
+                                    ->hiddenLabel()
+                                    ->formatStateUsing(fn() => '.....')
+                                    ->icon(fn($state) => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
+                                    ->color(fn($state) => $state ? 'success' : 'danger'),
+
                             ]),
-                        ...static::publicationNecessaryView(),
+                        ...static::publicationNecessaryView($record),
                         ...static::extraFormView($record),
                     ])
                     ->columnSpanFull(),
@@ -66,19 +81,14 @@ class EventRegistrationResource extends Resource
     {
         return $form
             ->schema(fn($record) => [
-                Forms\Components\Hidden::make('event_id')
-                    ->required(),
-                Forms\components\Hidden::make('user_id')
-                    ->required(),
-
                 Forms\Components\Wizard::make()
                     ->skippable()
-                    ->skippable(fn($record) => $record !== null)
-                    ->afterStateHydrated(fn($set) => static::userInfos($set))
+                    //->afterStateHydrated(fn($set) => static::userInfos($set))
                     ->persistStepInQueryString('reg-event')
-                    ->schema(fn($get) => [
+                    ->schema([
                         Forms\Components\Wizard\Step::make('presonl-infos')
                             ->label('Személyes adatok')
+                            ->icon('heroicon-o-user')
                             ->schema([
                                 ...Event\UserForm::schema(),
                             ]),
@@ -91,8 +101,8 @@ class EventRegistrationResource extends Resource
                                     )),
                                 ...Event\BillingForm::schema(),
                             ]),
-                        ...static::publicationNecessary(),
-                        ...static::extraForm($get, $record),
+                        ...static::publicationNecessaryForm($record),
+                        ...static::extraForm($record),
                         Forms\Components\Wizard\Step::make('Extra')
                             ->schema([
                                 Forms\Components\Toggle::make('adatkezelesi')
@@ -101,6 +111,14 @@ class EventRegistrationResource extends Resource
                                     ->offIcon('heroicon-m-exclamation-triangle')
                                     ->onColor('success')
                                     ->offColor('danger')
+                                    ->afterStateHydrated(function ($state, $set, $record) {
+                                        if ($record && !is_null($record->accepted_data_protection)) {
+                                            $set(
+                                                'adatkezelesi',
+                                                true
+                                            );
+                                        }
+                                    })
                                     ->accepted(),
                                 Forms\Components\Toggle::make('hozzajarulas')
                                     ->label('Ezúton hozzájárulok, hogy a Doktoranduszok Országos Szövetsége, mint adatkezelő egyéni vagy nem tömeges (nem tömegről készült) fénykép vagy videófelvételeket készítsen a Rendezvény dokumentálása és jövőbeni népszerűsítése céljából. Hozzájárulás hiányában az Adatkezelő nem készíthet rólam egyéni vagy nem tömeges (tömegről készült) fénykép vagy videófelvételeket.')
@@ -108,9 +126,15 @@ class EventRegistrationResource extends Resource
                                     ->offIcon('heroicon-m-exclamation-triangle')
                                     ->onColor('success')
                                     ->offColor('danger')
-                                    ->accepted(),
+                                    ->afterStateHydrated(function ($state, $set, $record) {
+                                        if ($record && !is_null($record->accepted_data_use)) {
+                                            $set(
+                                                'hozzajarulas',
+                                                true
+                                            );
+                                        }
+                                    }),
                             ]),
-
                     ])
                     ->submitAction(new HtmlString(Blade::render(
                         <<<'BLADE'
@@ -122,7 +146,7 @@ class EventRegistrationResource extends Resource
                             </x-filament::button>
                         BLADE
                     )))
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
             ]);
     }
 
@@ -176,9 +200,9 @@ class EventRegistrationResource extends Resource
         ];
     }
 
-    protected static function publicationNecessaryView(): array
+    protected static function publicationNecessaryView(EventRegistration $record): array
     {
-        return session()->get('event_reg-abstract_neccessary', false)
+        return $record->event->abstract_neccessary ?? False
             ? [Infolists\Components\Tabs\Tab::make('Publikációk')
                 ->schema([
                     ...Event\PublicationInfolist::schema(),
@@ -186,9 +210,9 @@ class EventRegistrationResource extends Resource
             : [];
     }
 
-    protected static function publicationNecessary(): array
+    protected static function publicationNecessaryForm(?EventRegistration $record = null): array
     {
-        return session()->get('event_reg-abstract_neccessary', false)
+        return $record->event->abstract_neccessary ?? False
             ? [Forms\Components\Wizard\Step::make('Publikációk')
                 ->schema([
                     ...Event\PublicationForm::schema(),
@@ -196,56 +220,41 @@ class EventRegistrationResource extends Resource
             : [];
     }
 
-    protected static function extraForm(Get $get, ?EventRegistration $record): array
+
+    protected static function extraForm(?EventRegistration $record = null): array
     {
-        $custom_form = session()->get('event_reg-extra_form', false);
+        $custom_form = $record->event->reg_form ?? False;
 
         return
             $custom_form
             ?
             [Forms\Components\Wizard\Step::make('További kérdések')
                 ->schema([
-                    ...Event\ExtraForm::schema($custom_form, $record),
+                    ...Event\ExtraFormForm::schema(
+                        customForm: $custom_form,
+                        event_reg: $record,
+                        attribute_name: 'reg_form_response'
+                    ),
                 ])]
             : [];
     }
 
     protected static function extraFormView(EventRegistration $record): array
     {
-        $custom_form = $record->event->reg_form->custom_form;
-        $custom_form_response = $record->event_form_response;
+        $custom_form = $record->event->reg_form ?? False;
+        $custom_form_response = $record->reg_form_response;
 
         return
             $custom_form
             ?
             [Infolists\Components\Tabs\Tab::make('További kérdések')
                 ->schema([
-                    ...Event\ExtraFormView::schema($custom_form, $custom_form_response),
+                    ...Event\ExtraFormView::schema(
+                        customForm: $custom_form,
+                        responses: $custom_form_response
+                    ),
                 ])]
             : [];
-    }
-
-    protected static function userInfos($set)
-    {
-        $user = Auth::user();
-
-        $set('regisztralo_name', $user->name);
-        $set('notification_email', $user->email);
-        $set('universities', $user->doctoral_school?->university_id ?? null);
-        $set('doctoral_school_id', $user->doctoral_school?->id ?? null);
-
-        if (! $user->address) {
-            $set('event_invoice_address.zip', null);
-            $set('event_invoice_address.country', 'Magyarország');
-            $set('event_invoice_address.city', null);
-            $set('event_invoice_address.address', null);
-            return;
-        }
-
-        $set('event_invoice_address.zip', $user->address['postal_code']);
-        $set('event_invoice_address.country', $user->address['country']);
-        $set('event_invoice_address.city', $user->address['city']);
-        $set('event_invoice_address.address', $user->address['street']);
     }
 
     public static function getPages(): array

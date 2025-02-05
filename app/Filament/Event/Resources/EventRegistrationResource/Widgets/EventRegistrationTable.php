@@ -35,6 +35,8 @@ class EventRegistrationTable extends TableWidget
                 Tables\Columns\TextColumn::make('event.name')
                     ->listWithLineBreaks()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('status.name')
+                    ->label('státusz'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

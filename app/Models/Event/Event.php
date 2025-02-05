@@ -4,6 +4,7 @@ namespace App\Models\Event;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,7 +30,10 @@ class Event extends Model implements HasMedia
         'event_registration_start_datetime',
         'event_registration_end_datetime',
         'event_registration_available',
+        'abstract_neccessary',
         'event_registration_editable',
+        'event_reg_form_id',
+        'event_feedback_form_id',
     ];
 
     protected $casts = [
@@ -97,15 +101,14 @@ class Event extends Model implements HasMedia
         return $this->hasMany(EventRegistration::class);
     }
 
-    public function event_custom_forms(): HasMany
+    public function reg_form(): BelongsTo
     {
-        return $this->hasMany(EventCustomForm::class);
+        return $this->belongsTo(CustomForm::class, 'event_reg_form_id', 'id');
     }
 
-    public function reg_form(): HasOne
+    public function feedback_form(): BelongsTo
     {
-        return $this->hasOne(EventCustomForm::class)
-            ->where('type', 'reg');
+        return $this->belongsTo(CustomForm::class, 'event_feedback_form_id', 'id');
     }
 
     public function registerMediaConversions(Media|null $media = null): void

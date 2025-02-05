@@ -9,6 +9,7 @@ use CodeWithDennis\SimpleAlert\Components\Forms\SimpleAlert;
 use
 
 Filament\Forms\Components\{Select, TextInput, Section, Fieldset, Grid, Placeholder, Repeater, Radio, Tabs, TagsInput};
+use Filament\Forms\Components\Actions\Action;
 use Illuminate\Support\Facades\Auth;
 
 class PublicationForm
@@ -42,9 +43,10 @@ class PublicationForm
                     Tabs::make()
                         ->persistTabInQueryString()
                         ->schema([
-                            Tabs\Tab::make('Szerzők')
+                            Tabs\Tab::make(mb_ucfirst(__('resource.components.authors')))
                                 ->schema([
                                     Repeater::make('authors')
+                                        ->hiddenLabel()
                                         ->label(__('resource.components.authors'))
                                         ->relationship()
                                         ->minItems(1)
@@ -53,6 +55,11 @@ class PublicationForm
                                         ->reorderableWithDragAndDrop()
                                         ->reorderableWithButtons()
                                         ->collapsible()
+                                        ->itemLabel(
+                                            fn(array $state): ?string => ($state['name']['firstname'] && $state['name']['lastname'])
+                                                ? $state['name']['titulus'] . " " . $state['name']['lastname'] . ", " . $state['name']['firstname']  ?? null
+                                                : ''
+                                        )
                                         ->schema([
                                             Fieldset::make()
                                                 ->label(__('resource.components.name'))
@@ -70,37 +77,46 @@ class PublicationForm
                                                             'öz.' => 'özvegy.',
                                                         ])
                                                         ->default('')
+                                                        ->live()
                                                         ->columnSpan(1)
                                                         ->nullable(),
                                                     TextInput::make('name.lastname')
                                                         ->label(__('resource.components.lastname'))
+                                                        ->live()
                                                         ->columnSpan(2)
                                                         ->required(),
                                                     TextInput::make('name.firstname')
                                                         ->label(__('resource.components.firstname'))
+                                                        ->live()
                                                         ->columnSpan(2)
                                                         ->required(),
                                                 ]),
                                             TextInput::make('affiliation')
                                                 ->label(__('resource.components.affiliation'))
-                                                ->columnSpan(2)
-                                                ->required(),
+                                                ->required()
+                                                ->columnSpan(2),
                                             TextInput::make('email')
                                                 ->label(__('resource.components.email'))
                                                 ->columnSpan(2)
-                                                ->hidden(function ($component) {
-                                                    $firstItemKey = array_key_first($component->getContainer()->getParentComponent()->getState());
+                                                ->visible(function ($get) {
+                                                    $allItems = $get('../') ?? []; // A repeater teljes állapota
+                                                    $index = array_search($get('.'), array_values($allItems), true); // Az aktuális elem indexének meghatározása
 
-                                                    return ! str_contains($component->getStatePath(), $firstItemKey);
+                                                    return $index === 0; // Csak az első elemnél legyen required
                                                 })
-                                                ->required(function ($component) {
-                                                    $firstItemKey = array_key_first($component->getContainer()->getParentComponent()->getState());
+                                                ->required(function ($get) {
+                                                    $allItems = $get('../') ?? []; // A repeater teljes állapota
+                                                    $index = array_search($get('.'), array_values($allItems), true); // Az aktuális elem indexének meghatározása
 
-                                                    return str_contains($component->getStatePath(), $firstItemKey);
+                                                    return $index === 0; // Csak az első elemnél legyen required
                                                 }),
-                                        ]),
+                                        ])
+                                        ->cloneable()
+                                        ->deleteAction(
+                                            fn(Action $action) => $action->requiresConfirmation(),
+                                        ),
                                 ]),
-                            Tabs\Tab::make('Absztrakt')
+                            Tabs\Tab::make(mb_ucfirst(__('resource.tabs.abstract')))
                                 ->label(__('resource.tabs.abstract'))
                                 ->schema([
                                     Section::make()

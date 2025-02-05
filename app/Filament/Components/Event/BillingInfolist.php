@@ -33,7 +33,7 @@ class BillingInfolist
                             'default' => 1,
                             'md' => 3,
                         ])
-                        ->hidden(fn($record) => !$record->event_invoice_address['personal_or_industrial']),
+                        ->hidden(fn($record) => !($record->event_invoice_address['personal_or_industrial'] ?? false)),
 
                     TextEntry::make('event_invoice_address.billing_name')
                         ->label(__('resource.components.billing_name'))

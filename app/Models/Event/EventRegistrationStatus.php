@@ -31,4 +31,9 @@ class EventRegistrationStatus extends Pivot
     {
         return $this->belongsTo(EventStatus::class);
     }
+
+    public function getNameAttribute()
+    {
+        return $this->eventStatus->name[session()->get('locale', 'hu')];
+    }
 }

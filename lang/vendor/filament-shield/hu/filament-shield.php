@@ -23,7 +23,7 @@ return [
     'field.guard_name' => 'Guard név',
     'field.permissions' => 'Engedélyek',
     'field.select_all.name' => 'Összes kijelölése',
-    'field.select_all.message' => 'Engedélyezze az összes jelenleg <span class="text-primary font-medium">bekapcsolt</span> engedélyt a szerepkör számára.',
+    'field.select_all.message' => 'Engedélyezze az összes jelenleg <span class="font-medium text-primary">bekapcsolt</span> engedélyt a szerepkör számára.',
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'nav.group' => 'Rendszer',
+    'nav.group' => 'Hozzáférés',
     'nav.role.label' => 'Jogosultságok',
     'nav.role.icon' => 'heroicon-o-shield-check',
     'resource.label.role' => 'Jogosultság',

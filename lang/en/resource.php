@@ -58,6 +58,16 @@ return [
         'event_registrations' => 'Event registrations',
         'menu' => 'Menu',
         'menus' => 'Menus',
+        'university' => 'university',
+        'universities' => 'universities',
+        'user' => 'user',
+        'users' => 'users',
+        'role' => 'role',
+        'roles' => 'roles',
+        'position' => 'position',
+        'positions' => 'positions',
+        'position_type' => 'position_type',
+        'position_types' => 'position_types',
     ],
 
     'components' => [

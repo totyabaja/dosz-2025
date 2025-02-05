@@ -36,12 +36,12 @@ class UniversityResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('university');
+        return __('resource.title.university');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('universities');
+        return __('resource.title.universities');
     }
 
     public static function infolist(Infolist $infolist): Infolist

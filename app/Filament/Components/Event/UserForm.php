@@ -2,6 +2,7 @@
 
 namespace App\Filament\Components\Event;
 
+use App\Models\Event\EventRegistration;
 use App\Models\Scientific\DoctoralSchool;
 use App\Models\Scientific\University;
 use
@@ -22,8 +23,8 @@ class UserForm
                     'lg' => 2,
                 ])
                 ->schema([
-                    TextInput::make('regisztralo_name')
-                        ->readOnly()
+                    Placeholder::make('user.name')
+                        ->content(fn(EventRegistration $record): string => $record?->user->name ?? '')
                         ->label('Teljes név'),
 
                     TextInput::make('notification_email')
@@ -33,7 +34,6 @@ class UserForm
 
             Fieldset::make()
                 ->label('Intézményi adatok')
-                ->disabled()
                 ->schema([
                     Grid::make([
                         'default' => 1,
@@ -51,14 +51,12 @@ class UserForm
                             ->label(__('Doctoral School'))
                             ->options(function (callable $get) {
                                 $universityId = $get('universities'); // Kiválasztott egyetem ID-je
-                                if (! $universityId) {
-                                    return DoctoralSchool::all()
-                                        ->sortBy('filament_full_name')
-                                        ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name]); // Alapértelmezett lista, ha nincs szűrés
-                                }
 
                                 // Szűkített lista az adott egyetem alapján
-                                return DoctoralSchool::where('university_id', $universityId)
+                                return DoctoralSchool::query()
+                                    ->when($universityId, function ($query) use ($universityId) {
+                                        $query->where('university_id', $universityId);
+                                    })
                                     ->get()
                                     ->sortBy('filament_full_name')
                                     ->mapWithKeys(fn($item) => [$item->id => $item->filament_full_name]);

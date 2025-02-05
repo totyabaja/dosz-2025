@@ -18,12 +18,12 @@ class PositionTypeResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('position type');
+        return __('resource.title.position_type');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('position types');
+        return __('resource.title.position_types');
     }
 
     public static function form(Form $form): Form
@@ -106,11 +106,11 @@ class PositionTypeResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('menu.nav_group.settings');
+        return __('menu.nav_group.access');
     }
 
-    public static function getNavigationSort(): ?int
+    public static function getNavigationParentItem(): ?string
     {
-        return 0;
+        return mb_ucfirst(__('resource.title.positions'));
     }
 }

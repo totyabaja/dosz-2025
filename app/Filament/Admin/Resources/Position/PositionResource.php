@@ -22,16 +22,18 @@ class PositionResource extends Resource
 {
     protected static ?string $model = Position::class;
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $navigationIcon = 'fas-person-circle-exclamation';
 
     public static function getModelLabel(): string
     {
-        return __('position');
+        return __('resource.title.position');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('positions');
+        return __('resource.title.positions');
     }
 
     public static function form(Form $form): Form
@@ -270,11 +272,6 @@ class PositionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('menu.nav_group.access');
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return 0;
+        return __("menu.nav_group.access");
     }
 }

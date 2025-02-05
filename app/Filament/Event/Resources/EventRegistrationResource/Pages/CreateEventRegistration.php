@@ -14,39 +14,33 @@ class CreateEventRegistration extends CreateRecord
 {
     protected static string $resource = EventRegistrationResource::class;
 
-    protected ?Event $event = null;
-
-    protected function beforeFill(): void
+    public function beforeFill()
     {
         $slug = Request::route('eventslug'); // Slug kinyerése az útvonalból
-
-        $this->event = Event::where('slug', $slug)->firstOrFail();
+        $event = Event::where('slug', $slug)->firstOrFail();
+        $user = Auth::user();
 
         $prev_reg = EventRegistration::query()
-            ->where('event_id', $this->event->id)
-            ->where('user_id', Auth::id())
+            ->where('event_id', $event->id)
+            ->where('user_id', $user->id)
             ->first();
 
         if ($prev_reg) {
-            redirect()->route('filament.event.resources.event-registrations.view', ['record' => $prev_reg->id]);
+            return redirect()->route('filament.event.resources.event-registrations.view', ['record' => $prev_reg->id]);
+        } else {
+            $new_reg = EventRegistration::create([
+                'event_id' => $event->id,
+                'user_id' => $user->id,
+                'notification_email' => $user->email,
+                'doctoral_school_id' => $user->doctoral_school_id,
+                'scientific_department_id' => null,
+                'event_invoice_address' => [],
+                'reg_form_response' => [],
+                'feedback_form_response' => [],
+            ]);
+
+            return redirect()->route('filament.event.resources.event-registrations.edit', ['record' => $new_reg->id]);
         }
-    }
-
-    protected function afterFill(): void
-    {
-        // Automatikusan kitölti az event_id mezőt a formban
-        $this->form->fill([
-            'event_id' => $this->event->id,
-            'user_id' => Auth::id(),
-        ]);
-
-        session(['event_reg-abstract_neccessary' => $this->event->abstract_neccessary]);
-        session(['event_reg-extra_form' => $this->event->reg_form->custom_form ?? null]);
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        return $data;
     }
 
     protected function getFormActions(): array

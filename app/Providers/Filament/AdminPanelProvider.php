@@ -7,7 +7,6 @@ use App\Filament\Admin\Widgets\{UserStatWidget, UserActivityStatWidget};
 use App\Filament\Pages\Auth\{EmailVerification, Login, RequestPasswordReset};
 use App\Filament\Pages\{HealthCheckResults, Registration};
 use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
-use App\Filament\Resources\ActivityResource;
 use App\Livewire\{MyProfileExtended, MyProfileExtendedUniversity};
 use App\Settings\GeneralSettings;
 use Filament\Enums\ThemeMode;
@@ -68,14 +67,13 @@ class AdminPanelProvider extends PanelProvider
                     ->visible(fn(): bool => auth()->user()->can('access_log_viewer'))
                     ->url(config('app.url') . '/' . config('log-viewer.route_path'), shouldOpenInNewTab: true)
                     ->icon('fluentui-document-bullet-list-multiple-20-o')
-                    ->group(__('menu.nav_group.activities'))
-                    ->sort(99),
+                //->group(__('menu.nav_group.activities')),
             ])
             //->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->resources([
-                ActivityResource::class,
-                //config('filament-logger.activity_resource')
+                //ActivityResource::class,
+                config('filament-logger.activity_resource')
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admijn\\Pages')
             ->pages([
@@ -89,6 +87,20 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\FilamentInfoWidget::class,
                 UserStatWidget::class,
                 UserActivityStatWidget::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label(__('menu.nav_group.access')),
+                NavigationGroup::make()
+                    ->label(__('menu.nav_group.content')),
+                NavigationGroup::make()
+                    ->label(__('menu.nav_group.settings')),
+                NavigationGroup::make()
+                    ->label(__('menu.nav_group.activities')),
+                NavigationGroup::make()
+                    ->label(__('menu.nav_group.legal_aid')),
+                NavigationGroup::make()
+                    ->label('Admin'),
             ])
             ->middleware([
                 EncryptCookies::class,

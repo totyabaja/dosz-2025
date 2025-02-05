@@ -13,18 +13,13 @@ use
 Filament\Forms\Components\{Select, TextInput, Section, Textarea, Checkbox, Radio, Hidden};
 use Illuminate\Support\Facades\Auth;
 
-class ExtraForm
+class ExtraFormForm
 {
-    public static function schema(CustomForm $customForm, ?EventRegistration $event_reg = null): array
+    public static function schema(CustomForm $customForm, EventRegistration $event_reg, string $attribute_name): array
     {
         $content = $customForm->content;
-        $response = EventFormResponse::query()
-            ->where('custom_form_id', $customForm->id)
-            ->where('event_registration_id', $event_reg?->id ?? null)
-            ->first()?->responses ?? null;
+        $responses = $event_reg->{$attribute_name} ?? null;
 
-        // Betöltjük az eddig mentett válaszokat
-        $attribute_name = 'event_form_response.responses';
 
         $formComponents = [
             // TODO: valamiért nem látja
@@ -48,7 +43,7 @@ class ExtraForm
                         ->required($data['required'] ?? false)
                         ->hint($data['hint'] ?? null)
                         ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
                     break;
 
                 case 'select':
@@ -62,14 +57,14 @@ class ExtraForm
                         ->hint($data['hint'] ?? null)
                         ->helperText($data['helperText'] ?? null)
                         ->placeholder($data['placeholder'] ?? null)
-                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
                     break;
 
                 case 'checkbox':
                     $formComponents[] = Checkbox::make("{$attribute_name}.{$fieldId}")
                         ->label($data['title'] ?? 'N/A')
                         ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
                     break;
 
                 case 'radio':
@@ -79,7 +74,7 @@ class ExtraForm
                         ->options($options)
                         ->required($data['required'] ?? false)
                         ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
                     break;
 
                 case 'textarea':
@@ -89,7 +84,7 @@ class ExtraForm
                         ->required($data['required'] ?? false)
                         ->hint($data['hint'] ?? null)
                         ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn() => $response[$data['id']] ?? null);
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
                     break;
             }
         }

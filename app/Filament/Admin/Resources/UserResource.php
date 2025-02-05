@@ -32,10 +32,20 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
     protected static int $globalSearchResultsLimit = 20;
 
-    protected static ?int $navigationSort = -1;
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-s-users';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getModelLabel(): string
+    {
+        return __('resource.title.user');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resource.title.users');
+    }
 
     public static function form(Form $form): Form
     {
