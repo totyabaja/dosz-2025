@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Resources\Position;
 
 use App\Filament\Admin\Resources\Position\PositionResource\Pages;
 use App\Models\Position\Position;
-use App\Models\Position\PositionSubtype;
+use App\Models\Position\PositionSubType;
 use App\Models\Position\PositionType;
 use App\Models\Scientific\ScientificDepartment;
 use App\Models\User;
@@ -101,13 +101,13 @@ class PositionResource extends Resource
                             ->options(function (callable $get) {
                                 $posiTypeId = $get('position_types'); // Kiválasztott egyetem ID-je
                                 if (! $posiTypeId) {
-                                    return PositionSubtype::all()
+                                    return PositionSubType::all()
                                         ->mapWithKeys(fn($item) => [
                                             $item->id => $item->name['hu'] ?? 'N/A', // Ha nincs 'hu', akkor 'N/A'
                                         ]);
                                 }
 
-                                return PositionSubtype::query()
+                                return PositionSubType::query()
                                     ->where('position_type_id', $posiTypeId)
                                     ->get()
                                     ->mapWithKeys(fn($item) => [
@@ -118,11 +118,11 @@ class PositionResource extends Resource
                             ->preload()
                             ->afterStateUpdated(function (callable $set, $state) {
                                 // A doktori iskola kiválasztása után frissítjük az egyetemet
-                                $posiTypeId = PositionSubtype::find($state)?->position_type_id;
+                                $posiTypeId = PositionSubType::find($state)?->position_type_id;
                                 $set('position_types', $posiTypeId);
                             })
                             ->afterStateHydrated(function ($state, $set, $get) {
-                                $universityId = PositionSubtype::find($state)?->position_type_id;
+                                $universityId = PositionSubType::find($state)?->position_type_id;
                                 $set('position_types', $universityId);
                             })
                             ->createOptionForm([
@@ -138,9 +138,9 @@ class PositionResource extends Resource
                                     ->columns(2),
                             ])
                             ->createOptionUsing(function ($data) {
-                                $data['order'] = PositionSubtype::where('position_type_id', $data['position_type_id'])->count() + 1;
+                                $data['order'] = PositionSubType::where('position_type_id', $data['position_type_id'])->count() + 1;
 
-                                return PositionSubtype::create($data);
+                                return PositionSubType::create($data);
                             }),
                         Forms\Components\Select::make('scientific_department_id')
                             ->nullable()
