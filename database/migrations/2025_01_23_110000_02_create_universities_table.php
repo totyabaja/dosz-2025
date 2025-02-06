@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('universities', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
+            $table->string(mb_ucfirst(__('reg.fieldset.full_name')));
             $table->string('full_name_en');
             $table->string('short_name', 10);
             $table->string('url');

@@ -88,6 +88,7 @@ return [
         'zip' => 'Postcode',
         'country' => 'country',
         'city' => 'city',
+        'street' => 'street',
         'address' => 'address',
         'publication_type' => 'publication type',
         'authors' => 'authors',
@@ -103,7 +104,20 @@ return [
         'title' => 'title',
         'abstract' => 'abstract',
         'keywords' => 'keywords',
-
+        'scientific_departments' => 'scientific departments',
+        'scientific_department' => 'scientific department',
+        'universities' => 'universities',
+        'university' => 'university',
+        'doctoral_school' => 'doctoral_school',
+        'doctoral_schools' => 'doctoral_schools',
+        'disszertacio' => 'title of the dissertation',
+        'kutatohely' => 'institute / location of the research',
+        'multi_tudomanyag' => 'multidiscipline',
+        'kutatohely' => 'institute / location of the research',
+        'tudfokozat' => 'has a PhD/DLA',
+        'fokozat_eve' => 'year of the PhD/DLA',
+        'scientific_fields' => 'scientific main field',
+        'scientific_subfields' => 'scientific field',
     ],
 
     'tabs' => [
@@ -117,5 +131,7 @@ return [
     'messages' => [
         'saved_title' => ':item saved',
         'saved_body' => 'The :item has been saved successfully',
+        'houzajarulas' => "I expressly consent to the National Association of Doctoral Students, as the data controller, processing my personal data provided above, including any special data I may have provided, for the purpose of addressing issues related to contract fulfillment. Without granting this consent, we are unable to respond to the inquiry or fulfill the requested action.",
+
     ],
 ];

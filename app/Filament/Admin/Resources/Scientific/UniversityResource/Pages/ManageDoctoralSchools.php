@@ -52,7 +52,7 @@ class ManageDoctoralSchools extends ManageRelatedRecords
                 Tables\Columns\TextColumn::make('university.short_name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('full_name')
+                Tables\Columns\TextColumn::make(mb_ucfirst(__('reg.fieldset.full_name')))
                     ->listWithLineBreaks()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

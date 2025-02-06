@@ -2,6 +2,7 @@
 
 return [
     'menu' => [
+        'personal' => 'Personal',
         'contact' => 'Contact',
         'scientific' => 'Scientific',
         'extra' => 'Extra',
@@ -13,6 +14,9 @@ return [
     'fieldset' => [
         'contacts' => 'Contacts',
         'address' => 'Address',
+        'full_name' => 'full name',
+        'passwords' => 'password',
+        'login_values' => 'login data',
     ],
 
     'input' => [

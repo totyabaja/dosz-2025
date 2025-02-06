@@ -67,6 +67,7 @@ return [
         'zip' => 'irányítószám',
         'country' => 'ország',
         'city' => 'város',
+        'street' => 'utca',
         'address' => 'cím',
         'publication_type' => 'Publikáció típusa',
         'authors' => 'szerzők',
@@ -81,7 +82,20 @@ return [
         'abstract' => 'absztrakt',
         'keywords' => 'kulcsszavak',
         'job' => 'folyamat',
-        'jobs' => 'folyaamtok',
+        'jobs' => 'folyamatok',
+        'scientific_departments' => 'tudományos osztályok',
+        'scientific_department' => 'tudományos osztály',
+        'universities' => 'egyetemek',
+        'university' => 'egyetem',
+        'doctoral_school' => 'doktori iskola',
+        'doctoral_schools' => 'doktori iskolák',
+        'disszertacio' => 'disszertáció címe',
+        'kutatohely' => 'kutatóhely / kutatás helyszíne',
+        'multi_tudomanyag' => 'multidiszciplináris',
+        'tudfokozat' => 'PhD/DLA fokozattal rendelkezik',
+        'fokozat_eve' => 'Fokozatszerzés éve',
+        'scientific_fields' => 'tudományterület',
+        'scientific_subfields' => 'alterület',
     ],
     'tabs' => [
         'hungarian' => 'magyar',
@@ -93,5 +107,6 @@ return [
     'messages' => [
         'saved_title' => ':elem mentve',
         'saved_body' => 'A :item sikeresen elmentve',
+        'hozzajarulas' => "Kifejezetten hozzájárulok, hogy a Doktoranduszok Országos Szövetsége, mint adatkezelő a fentiekben megadott személyes adataimat, beleértve az általam esetlegesen megadott különleges adataimat a szerződés teljesítéséhez kapcsolódó kérdések rendezése céljából kezelje. A hozzájárulás megadásának hiányában nem áll módunkban válaszolni a megkeresésre vagy teljesíteni a megfogalmazott kérést.",
     ]
 ];

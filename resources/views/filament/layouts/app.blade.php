@@ -6,7 +6,7 @@
 
     $userMenuItems = [
         (object) ['name' => 'Profilom', 'route' => 'filament.event.pages.my-profile'],
-        //(object) ['name' => 'Rendezvényeim', 'route' => 'filament.admin.pages.my-events'],
+        //(object) ['name' => 'Rendezvényeim', 'route' => 'filament.admin.pages.dashboard.pages.my-events'],
         //(object) ['name' => 'Rendezvényeim', 'route' => 'filament.event.pages.dashboard'],
     ];
 @endphp
@@ -139,8 +139,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //-->
                                         </div>
                                     </div>
                                     <div>
@@ -162,12 +162,24 @@
                                         Rendezvényeim
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('filament.admin.pages.dashboard') }}">
-                                        <span class="icon-[tabler--receipt-rupee]"></span>
-                                        Admin
-                                    </a>
-                                </li>
+                                @if (Auth::user()->isDoszAdmin())
+                                    <li>
+
+                                        <a class="dropdown-item" href="{{ route('filament.to-admin.pages.dashboard') }}">
+                                            <span class="icon-[tabler--receipt-rupee]"></span>
+                                            Admin
+                                        </a>
+                                    </li>
+                                @endif
+                                @if (Auth::user()->isToAdmin())
+                                    <li>
+
+                                        <a class="dropdown-item" href="{{ route('filament.admin.pages.dashboard') }}">
+                                            <span class="icon-[tabler--receipt-rupee]"></span>
+                                            TO Admin
+                                        </a>
+                                    </li>
+                                @endif
                                 <li class="gap-2 dropdown-footer">
                                     <button class="btn btn-error btn-soft btn-block" form="logoutForm">
                                         <span class="icon-[tabler--logout]"></span>
@@ -254,12 +266,22 @@
                                             </a>
                                         </li>
                                     @endforeach
-                                    <li>
-                                        <a href="{{ route('filament.admin.pages.dashboard') }}">
-                                            <span class="icon-[tabler--logout-2] size-5"></span>
-                                            Admin
-                                        </a>
-                                    </li>
+                                    @if (Auth::user()->isDoszAdmin())
+                                        <li>
+                                            <a href="{{ route('filament.admin.pages.dashboard') }}">
+                                                <span class="icon-[tabler--logout-2] size-5"></span>
+                                                Admin
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if (Auth::user()->isToAdmin())
+                                        <li>
+                                            <a href="{{ route('filament.to-admin.pages.dashboard') }}">
+                                                <span class="icon-[tabler--logout-2] size-5"></span>
+                                                Admin
+                                            </a>
+                                        </li>
+                                    @endif
                                     <li>
                                         <a href="{{ route('filament.event.auth.logout') }}">
                                             <span class="icon-[tabler--logout-2] size-5"></span>

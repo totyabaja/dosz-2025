@@ -85,7 +85,7 @@ class UniversityResource extends Resource
                     ->label('Logo')
                     ->collection('university-avatars')
                     ->wrap(),
-                Tables\Columns\TextColumn::make('full_name')
+                Tables\Columns\TextColumn::make(mb_ucfirst(__('reg.fieldset.full_name')))
                     ->listWithLineBreaks()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('short_name')

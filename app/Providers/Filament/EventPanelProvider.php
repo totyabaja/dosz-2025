@@ -18,6 +18,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Navigation\UserMenuItem;
 use Filament\{Pages, Panel, PanelProvider, Widgets};
 use Filament\View\PanelsRenderHook;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
@@ -32,13 +33,17 @@ class EventPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            //->default()
+            ->default()
             ->id('event')
             ->path('event')
             ->topNavigation()
             ->login(Login::class)
             ->registration(Registration::class)
             ->defaultThemeMode(ThemeMode::Light)
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn(): View => view('filament.components.button-website', ['link' => config('app.url')]),
+            )
             ->userMenuItems([
                 UserMenuItem::make()
                     ->label('Kezdőoldal')

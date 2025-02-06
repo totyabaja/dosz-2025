@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('doctoral_schools', function (Blueprint $table) {
             $table->id();
             $table->foreignId('university_id');
-            $table->string('full_name');
+            $table->string(mb_ucfirst(__('reg.fieldset.full_name')));
             $table->string('short_name', 20);
             $table->string('url');
             $table->timestamps();

@@ -28,7 +28,7 @@ class Registration extends Register
                         ),
                     Forms\Components\Wizard\Step::make(__('reg.menu.contact'))
                         ->schema([
-                            $this->getEmailFormComponent(),
+
                             ...$this->getContactFormContent(),
                         ]),
                     Forms\Components\Wizard\Step::make(__('reg.menu.scientific'))
@@ -64,23 +64,29 @@ class Registration extends Register
     protected function getPersonalFormContent(): array
     {
         return [
-            Forms\Components\Fieldset::make(__('reg.fieldset.full_name'))->schema([
-                Forms\Components\TextInput::make('firstname')
-                    ->required()
-                    ->minLength(2)
-                    ->maxLength(255)
-                    ->hint('Keresztnév'),
+            Forms\Components\Fieldset::make(mb_ucfirst(__('reg.fieldset.full_name')))->schema([
                 Forms\Components\TextInput::make('lastname')
+                    ->label(mb_ucfirst(__('resource.components.lastname')))
                     ->required()
                     ->minLength(2)
                     ->maxLength(255)
                     ->hint('Vezetéknév'),
+                Forms\Components\TextInput::make('firstname')
+                    ->label(mb_ucfirst(__('resource.components.firstname')))
+                    ->required()
+                    ->minLength(2)
+                    ->maxLength(255)
+                    ->hint('Keresztnév'),
             ]),
 
-            Forms\Components\Fieldset::make(__('reg.fieldset.passwords'))->schema([
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
-            ]),
+            Forms\Components\Fieldset::make('logins')
+                ->label(mb_ucfirst(__('reg.fieldset.login_values')))
+                ->schema([
+                    $this->getEmailFormComponent(),
+                    $this->getPasswordFormComponent()
+                        ->columnStart(1),
+                    $this->getPasswordConfirmationFormComponent(),
+                ]),
 
         ];
     }
@@ -91,11 +97,11 @@ class Registration extends Register
             Forms\Components\Fieldset::make(__('reg.fieldset.contacts'))
                 ->schema([
                     Forms\Components\TextInput::make('email_intezmenyi')
-                        ->label(__('reg.input.email_intezmenyi'))
+                        ->label(mb_ucfirst(__('reg.input.email_intezmenyi')))
                         ->email()
                         ->nullable(),
                     Forms\Components\TextInput::make('mobil')
-                        ->label(__('reg.input.mobil'))
+                        ->label(mb_ucfirst(__('reg.input.mobil')))
                         ->nullable()
                         ->tel()
                         ->telRegex('/^[+]*[0-9]{1,4}[-\s\.\/0-9]*$/')
@@ -103,19 +109,20 @@ class Registration extends Register
                         ->maxLength(50),
                 ]),
 
-            Forms\Components\Fieldset::make(__('reg.fieldset.address'))
+            Forms\Components\Fieldset::make('address')
                 // ->relationship('address')
+                ->label(mb_ucfirst(__('reg.fieldset.address')))
                 ->schema([
                     Forms\Components\Grid::make()
                         ->columns(4)
                         ->schema([
                             Forms\Components\TextInput::make('postal_code')
-                                ->label(__('Postal Code'))
+                                ->label(mb_ucfirst(__('resource.components.zip')))
                                 ->maxLength(7)
                                 ->requiredWithAll(['country', 'city', 'street'])
                                 ->columnSpan(1), // 1 résznyi helyet foglal
                             Forms\Components\TextInput::make('country')
-                                ->label(__('Country'))
+                                ->label(mb_ucfirst(__('resource.components.country')))
                                 ->autocomplete(false)
                                 ->datalist([
                                     'Magyarország',
@@ -128,12 +135,12 @@ class Registration extends Register
                                 ->columnSpan(3), // 3 résznyi helyet foglal
 
                             Forms\Components\TextInput::make('city')
-                                ->label(__('City'))
+                                ->label(mb_ucfirst(__('resource.components.city')))
                                 ->autocomplete(false)
                                 ->requiredWithAll(['postal_code', 'country', 'street'])
                                 ->columnSpan(1),
                             Forms\Components\TextInput::make('street')
-                                ->label(__('Street'))
+                                ->label(mb_ucfirst(__('resource.components.street')))
                                 ->autocomplete(false)
                                 ->hint(__('Nagy Lajos utca 23. 2/46'))
                                 ->requiredWithAll(['postal_code', 'city', 'country'])
@@ -152,16 +159,18 @@ class Registration extends Register
             Forms\Components\Grid::make()->columns(2)->schema([
 
                 Forms\Components\Select::make('scientific_state_id')
+                    ->label(mb_ucfirst(__('resource.components.scientific_department')))
                     ->nullable()
                     ->options(fn() => ScientificState::pluck('name', 'id'))
                     ->preload(), // TODO: kell a kapcsolat
                 Forms\Components\TextInput::make('fokozateve')
+                    ->label(mb_ucfirst(__('resource.components.fokozat_eve')))
                     ->numeric()
                     ->nullable(),
             ]),
 
             Forms\Components\Select::make('universities')
-                ->label(__('University'))
+                ->label(mb_ucfirst(__('resource.components.university')))
                 ->options(
                     fn() =>
                     University::all()
@@ -178,7 +187,7 @@ class Registration extends Register
                 }),
 
             Forms\Components\Select::make('doctoral_school_id')
-                ->label(__('Doctoral School'))
+                ->label(mb_ucfirst(__('resource.components.doctoral_school')))
                 ->options(function (callable $get) {
                     $universityId = $get('universities'); // Kiválasztott egyetem ID-je
                     if (! $universityId) {
@@ -206,11 +215,15 @@ class Registration extends Register
                     $set('universities', $universityId);
                 }),
 
-            Forms\Components\TextInput::make('disszertacio'),
-            Forms\Components\TextInput::make('kutatohely'),
+            Forms\Components\TextInput::make('disszertacio')
+                ->label(mb_ucfirst(__('resource.components.disszertacio'))),
+            Forms\Components\TextInput::make('kutatohely')
+                ->label(mb_ucfirst(__('resource.components.kutatohely'))),
             Forms\Components\Grid::make()->columns(2)->schema([
-                Forms\Components\Toggle::make('multi_tudomanyag'),
-                Forms\Components\Toggle::make('tudfokozat'),
+                Forms\Components\Toggle::make('multi_tudomanyag')
+                    ->label(mb_ucfirst(__('resource.components.multi_tudomanyag'))),
+                Forms\Components\Toggle::make('tudfokozat')
+                    ->label(mb_ucfirst(__('resource.components.tudfokozat'))),
             ]),
         ];
     }
@@ -220,11 +233,12 @@ class Registration extends Register
         // TODO
         return [
             Forms\Components\Repeater::make('scientific_fields_users')
+                ->label(mb_ucfirst(__('resource.components.scientific_fields')))
                 // ->relationship('scientific_fields_users')
                 ->schema([
                     Forms\Components\Grid::make()->schema([
                         Forms\Components\Select::make('scientific_fields')
-                            ->label('Scientific Field')
+                            ->label(mb_ucfirst(__('resource.components.scientific_field')))
                             ->options(fn() => ScientificField::all()->pluck('name', 'id'))
                             ->live() // Figyelje a változást
                             ->searchable()
@@ -234,7 +248,7 @@ class Registration extends Register
                             }),
 
                         Forms\Components\Select::make('scientific_subfield_id')
-                            ->label('Scientific Subfield')
+                            ->label(mb_ucfirst(__('resource.components.scientific_subfield')))
                             ->options(function (callable $get) {
                                 $scientificFieldId = $get('scientific_fields'); // Kiválasztott egyetem ID-je
                                 if (! $scientificFieldId) {
@@ -259,6 +273,7 @@ class Registration extends Register
                     ]),
 
                     Forms\Components\TagsInput::make('keywords')
+                        ->label(mb_ucfirst(__('resource.components.keywords')))
                         ->splitKeys(['Tab', ',']),
                 ]),
         ];
@@ -268,7 +283,7 @@ class Registration extends Register
     {
         return [
             Forms\Components\Checkbox::make('accept')
-                ->label('Kifejezetten hozzájárulok, hogy a Doktoranduszok Országos Szövetsége, mint adatkezelő a fentiekben megadott személyes adataimat, beleértve az általam esetlegesen megadott különleges adataimat a szerződés teljesítéséhez kapcsolódó kérdések rendezése céljából kezelje. A hozzájárulás megadásának hiányában nem áll módunkban válaszolni a megkeresésre vagy teljesíteni a megfogalmazott kérést.')
+                ->label(__('resource.messages.hozzajarulas'))
                 ->accepted()
                 ->required()
                 ->afterStateUpdated(function (callable $set, $state) {

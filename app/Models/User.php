@@ -143,6 +143,15 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         return $this->hasRole(config('filament-shield.super_admin.name'));
     }
 
+    public function isDoszAdmin(): bool
+    {
+        return $this->hasAnyRole(['dosz_admin', 'super_admin', 'dosz_rendezvenyes', 'jogsegelyes']);
+    }
+    public function isToAdmin(): bool
+    {
+        return $this->hasAnyRole(['to_admin', 'super_admin', 'to_rendezvenyes', 'to_user']);
+    }
+
     public function registerMediaConversions(Media|null $media = null): void
     {
         $this->addMediaConversion('thumb')

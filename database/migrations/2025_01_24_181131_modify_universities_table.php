@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('universities', function (Blueprint $table) {
             $table->dropColumn('full_name_en');
-            $table->dropColumn('full_name');
-            $table->json('full_name');
+            $table->dropColumn(mb_ucfirst(__('reg.fieldset.full_name')));
+            $table->json(mb_ucfirst(__('reg.fieldset.full_name')));
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
     {
         Schema::table('universities', function (Blueprint $table) {
             $table->string('full_name_en');
-            $table->string('full_name');
-            $table->dropColumn('full_name');
+            $table->string(mb_ucfirst(__('reg.fieldset.full_name')));
+            $table->dropColumn(mb_ucfirst(__('reg.fieldset.full_name')));
         });
     }
 };

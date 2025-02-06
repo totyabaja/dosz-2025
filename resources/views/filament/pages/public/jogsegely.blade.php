@@ -3,8 +3,8 @@
 @section('title', __('resource.title.legal_aid'))
 
 @php
-    $doctoral_schools = \App\Models\Scientific\DoctoralSchool::orderBy('full_name')->get();
-    $universities = \App\Models\Scientific\University::orderBy('full_name')->get();
+    $doctoral_schools = \App\Models\Scientific\DoctoralSchool::orderBy(mb_ucfirst(__('reg.fieldset.full_name')))->get();
+    $universities = \App\Models\Scientific\University::orderBy(mb_ucfirst(__('reg.fieldset.full_name')))->get();
 @endphp
 
 @section('content')
