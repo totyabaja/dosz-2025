@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PositionSubType extends Model
+class PositionSubtype extends Model
 {
     use HasFactory;
+
+    public $table = 'position_subtypes';
 
     protected $fillable = ['position_type_id', 'name', 'order'];
 
