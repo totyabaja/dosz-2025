@@ -2,7 +2,6 @@
 
 namespace App\Filament\Event\Resources\EventRegistrationResource\Pages;
 
-use App\Filament\Admin\Resources\PageResource\Pages\EditPage;
 use App\Filament\Event\Resources\EventRegistrationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
