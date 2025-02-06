@@ -19,6 +19,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Navigation\NavigationGroup;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
@@ -26,6 +28,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -35,6 +39,10 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->registration(Registration::class)
             ->defaultThemeMode(ThemeMode::Light)
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn(): View => view('filament.components.button-website', ['link' => config('app.url')]),
+            )
             ->userMenuItems([
                 UserMenuItem::make()
                     ->label('Kezdőoldal')

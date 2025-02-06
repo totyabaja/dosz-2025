@@ -25,6 +25,7 @@ class CustomForm extends Model
         return $this->hasMany(EventCustomForm::class);
     }
 
+    // TODO: töröl
     public function event_form_responses(): HasMany
     {
         return $this->hasMany(EventFormResponse::class);

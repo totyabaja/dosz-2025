@@ -17,6 +17,7 @@ use Filament\Navigation\UserMenuItem;
 use Filament\{Pages, Panel, PanelProvider, Widgets};
 use Filament\Navigation\NavigationItem;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
@@ -36,6 +37,10 @@ class ToAdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->registration(Registration::class)
             ->defaultThemeMode(ThemeMode::Light)
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn(): View => view('filament.components.button-website', ['link' => route('public.to', \App\Models\Scientific\ScientificDepartment::find(session()->get('sd_selected'))->slug)]),
+            )
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
                 //fn(): View => view('filament.components.scientific-department-switcher'),

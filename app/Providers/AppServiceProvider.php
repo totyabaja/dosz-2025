@@ -74,10 +74,6 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::FOOTER,
             fn(): View => view('filament.components.panel-footer'),
         );
-        FilamentView::registerRenderHook(
-            PanelsRenderHook::USER_MENU_BEFORE,
-            fn(): View => view('filament.components.button-website'),
-        );
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_BEFORE,

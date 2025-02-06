@@ -200,7 +200,7 @@ class EventRegistrationResource extends Resource
         ];
     }
 
-    protected static function publicationNecessaryView(EventRegistration $record): array
+    public static function publicationNecessaryView(EventRegistration $record): array
     {
         return $record->event->abstract_neccessary ?? False
             ? [Infolists\Components\Tabs\Tab::make('Publikációk')
@@ -210,7 +210,7 @@ class EventRegistrationResource extends Resource
             : [];
     }
 
-    protected static function publicationNecessaryForm(?EventRegistration $record = null): array
+    public static function publicationNecessaryForm(?EventRegistration $record = null): array
     {
         return $record->event->abstract_neccessary ?? False
             ? [Forms\Components\Wizard\Step::make('Publikációk')
@@ -221,7 +221,7 @@ class EventRegistrationResource extends Resource
     }
 
 
-    protected static function extraForm(?EventRegistration $record = null): array
+    public static function extraForm(?EventRegistration $record = null): array
     {
         $custom_form = $record->event->reg_form ?? False;
 
@@ -239,7 +239,7 @@ class EventRegistrationResource extends Resource
             : [];
     }
 
-    protected static function extraFormView(EventRegistration $record): array
+    public static function extraFormView(EventRegistration $record): array
     {
         $custom_form = $record->event->reg_form ?? False;
         $custom_form_response = $record->reg_form_response;

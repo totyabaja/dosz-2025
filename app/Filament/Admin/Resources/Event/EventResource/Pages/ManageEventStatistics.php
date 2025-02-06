@@ -3,11 +3,12 @@
 namespace App\Filament\Admin\Resources\Event\EventResource\Pages;
 
 use App\Filament\Admin\Resources\Event\EventResource;
+use App\Filament\Admin\Resources\Event\EventResource\Widgets\EventRegFormStatistics;
 use App\Filament\Admin\Resources\Event\EventResource\Widgets\EventStatistics;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 
-class ManageEventStatisctics extends Page
+class ManageEventStatistics extends Page
 {
     use InteractsWithRecord;
 
@@ -27,7 +28,10 @@ class ManageEventStatisctics extends Page
         return [
             EventStatistics::make([
                 'record' => $this->record,
-            ])
+            ]),
+            EventRegFormStatistics::make([
+                'record' => $this->record,
+            ]),
         ];
     }
 }

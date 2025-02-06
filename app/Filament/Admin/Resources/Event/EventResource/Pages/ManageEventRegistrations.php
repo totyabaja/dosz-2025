@@ -7,6 +7,8 @@ use App\Filament\Admin\Resources\UserResource;
 use App\Filament\Components\Event\CustomFormInfolist;
 use App\Filament\Components\Event\PublicationForm;
 use App\Filament\Components\Event\PublicationInfolist;
+use App\Filament\Components\Event;
+use App\Filament\Event\Resources\EventRegistrationResource;
 use Filament\Actions;
 use Filament\Infolists;
 use Filament\Forms;
@@ -17,6 +19,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 
 class ManageEventRegistrations extends ManageRelatedRecords
 {
@@ -36,99 +40,86 @@ class ManageEventRegistrations extends ManageRelatedRecords
         return $infolist
             ->schema([
                 Infolists\Components\Tabs::make()
-                    ->schema([
-                        Infolists\Components\Tabs\Tab::make('Regisztráló adatai')
-                            ->columns([
-                                'default' => 1,
-                                'md' => 2,
-                            ])
-                            ->schema([
-                                Infolists\Components\TextEntry::make('user.name')
-                                    ->label(__('resource.components.name'))
-                                    ->inlineLabel(),
-                                Infolists\Components\TextEntry::make('user.email')
-                                    ->label(__('resource.components.email'))
-                                    ->inlineLabel()
-                                    ->copyable(true),
-                                Infolists\Components\TextEntry::make('user.phone')
-                                    ->label(__('resource.components.phone'))
-                                    ->inlineLabel(),
-                                Infolists\Components\TextEntry::make('user.doctoral_school.filament_full_name')
-                                    ->label(__('resource.components.doctoral_school'))
-                                    ->columnStart(1),
-                                Infolists\Components\TextEntry::make('user.doctoral_school.university.filament_full_name')
-                                    ->label(__('resource.components.university'))
-                                    ->columnStart(1),
-                            ]),
+                    ->schema(fn($record) => [
                         Infolists\Components\Tabs\Tab::make('Számlázási adatok')
-                            ->columns([
-                                'default' => 1,
-                                'md' => 6,
-                            ])
                             ->schema([
-                                Infolists\Components\TextEntry::make('event_invoice_address.personal_or_industrial')
-                                    ->label(__('resource.components.personal_or_industrial'))
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
-                                Infolists\Components\TextEntry::make('event_invoice_address.tax_number')
-                                    ->label(__('resource.components.tax_number'))
-                                    ->inlineLabel()
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
-                                Infolists\Components\TextEntry::make('event_invoice_address.billing_name')
-                                    ->label(__('resource.components.billing_name'))
-                                    ->inlineLabel()
-                                    ->columnSpanFull(),
+                                ...Event\UserInfolist::schema(),
+                                ...Event\BillingInfolist::schema(),
+                            ]),
 
-                                Infolists\Components\TextEntry::make('event_invoice_address.address_zip')
-                                    ->label(__('resource.components.zip'))
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 1,
-                                    ]),
-                                Infolists\Components\TextEntry::make('event_invoice_address.country')
-                                    ->label(__('resource.components.country'))
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
-                                Infolists\Components\TextEntry::make('event_invoice_address.address_city')
-                                    ->label(__('resource.components.city'))
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 3,
-                                    ]),
-                                Infolists\Components\TextEntry::make('event_invoice_address.address_address')
-                                    ->label('address')
-                                    ->columnSpanFull(),
-                            ]),
-                        Infolists\Components\Tabs\Tab::make('Publikációk')
-                            ->schema([
-                                ...PublicationInfolist::schema(),
-                            ]),
-                        ...self::extraForm(),
+                        ...EventRegistrationResource::publicationNecessaryView($record),
+                        ...EventRegistrationResource::extraFormView($record),
                     ])
                     ->columnSpanFull(),
             ]);
     }
 
-    protected function extraForm(): array
+    public function form(Form $form): Form
     {
-        //dd(request()->eventslug, \App\Models\Event\Event::where('slug', request()->eventslug)->get());
-        $custom_form = self::getRecord()?->reg_form->custom_form ?? null;
-        $response = self::$component->event_form_response->responses ?? null;
-
-        return
-            $custom_form
-            ? [Infolists\Components\Tabs\Tab::make('További kérdések')
-                ->schema([
-                    ...CustomFormInfolist::schema($custom_form, $response),
-                ])]
-            : [];
+        return $form
+            ->schema(fn($record) => [
+                Forms\Components\Wizard::make()
+                    ->skippable()
+                    //->afterStateHydrated(fn($set) => static::userInfos($set))
+                    ->persistStepInQueryString('reg-event')
+                    ->schema([
+                        Forms\Components\Wizard\Step::make('presonl-infos')
+                            ->label('Személyes adatok')
+                            ->icon('heroicon-o-user')
+                            ->schema([
+                                ...Event\UserForm::schema(),
+                            ]),
+                        Forms\Components\Wizard\Step::make('Számlázási adatok')
+                            ->schema([
+                                ...Event\BillingForm::schema(),
+                            ]),
+                        ...EventRegistrationResource::publicationNecessaryForm($record),
+                        ...EventRegistrationResource::extraForm($record),
+                        Forms\Components\Wizard\Step::make('Extra')
+                            ->schema([
+                                Forms\Components\Toggle::make('adatkezelesi')
+                                    ->label('Megismertem az Adatkezelési Tájékoztatót és a Rendezvény Adatkezelési Tájékoztató Kivonatát.')
+                                    ->onIcon('heroicon-m-document-check')
+                                    ->offIcon('heroicon-m-exclamation-triangle')
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->afterStateHydrated(function ($state, $set, $record) {
+                                        if ($record && !is_null($record->accepted_data_protection)) {
+                                            $set(
+                                                'adatkezelesi',
+                                                true
+                                            );
+                                        }
+                                    })
+                                    ->accepted(),
+                                Forms\Components\Toggle::make('hozzajarulas')
+                                    ->label('Ezúton hozzájárulok, hogy a Doktoranduszok Országos Szövetsége, mint adatkezelő egyéni vagy nem tömeges (nem tömegről készült) fénykép vagy videófelvételeket készítsen a Rendezvény dokumentálása és jövőbeni népszerűsítése céljából. Hozzájárulás hiányában az Adatkezelő nem készíthet rólam egyéni vagy nem tömeges (tömegről készült) fénykép vagy videófelvételeket.')
+                                    ->onIcon('heroicon-m-document-check')
+                                    ->offIcon('heroicon-m-exclamation-triangle')
+                                    ->onColor('success')
+                                    ->offColor('danger')
+                                    ->afterStateHydrated(function ($state, $set, $record) {
+                                        if ($record && !is_null($record->accepted_data_use)) {
+                                            $set(
+                                                'hozzajarulas',
+                                                true
+                                            );
+                                        }
+                                    }),
+                            ]),
+                    ])
+                    ->submitAction(new HtmlString(Blade::render(
+                        <<<'BLADE'
+                            <x-filament::button
+                                type="submit"
+                                size="sm"
+                            >
+                                Submit
+                            </x-filament::button>
+                        BLADE
+                    )))
+                    ->columnSpanFull()
+            ]);
     }
 
     public function table(Table $table): Table
@@ -137,12 +128,13 @@ class ManageEventRegistrations extends ManageRelatedRecords
             ->recordTitleAttribute('name')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name'),
+                Tables\Columns\TextColumn::make('status.name'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                //Tables\Actions\CreateAction::make(), // TODO
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

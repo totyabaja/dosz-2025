@@ -369,7 +369,7 @@ class EventResource extends Resource
             Pages\EditEvent::class,
             Pages\ManageEventRegistrations::class,
             Pages\ManageEventForms::class,
-            Pages\ManageEventStatisctics::class,
+            Pages\ManageEventStatistics::class,
             Pages\EventDocuments::class,
         ]);
     }
@@ -390,7 +390,7 @@ class EventResource extends Resource
             'edit' => Pages\EditEvent::route('/{record}/edit'),
             'registrations' => Pages\ManageEventRegistrations::route('/{record}/registrations'),
             'forms' => Pages\ManageEventForms::route('/{record}/forms'),
-            'statistics' => Pages\ManageEventStatisctics::route('/{record}/statistics'),
+            'statistics' => Pages\ManageEventStatistics::route('/{record}/statistics'),
             'documents' => pages\EventDocuments::route('/{record}/documents')
         ];
     }

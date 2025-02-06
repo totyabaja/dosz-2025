@@ -35,10 +35,10 @@ class PostResource extends Resource
                     ->required(),
                 Forms\Components\Section::make('Image')
                     ->schema([
-                        SpatieMediaLibraryFileUpload::make('media')
+                        SpatieMediaLibraryFileUpload::make('filament_avatar_url')
                             ->hiddenLabel()
                             ->disk('public')
-                            ->collection('post-images')
+                            ->collection('post-banners')
                             ->alignCenter()
                             ->columnSpanFull()
                             ->multiple(),

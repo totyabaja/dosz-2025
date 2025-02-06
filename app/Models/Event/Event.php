@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
@@ -66,7 +67,15 @@ class Event extends Model implements HasMedia
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->getMedia('event-banners')?->first()?->getUrl() ?? $this->getMedia('event-banners')?->first()?->getUrl('thumb') ?? null;
+        $avatarUrl = $this->getMedia('event-banners')?->first()?->getUrl()
+            ?? $this->getMedia('event-banners')?->first()?->getUrl('thumb');
+
+        if (!$avatarUrl) {
+            $settings = app(\App\Settings\GeneralSettings::class);
+            $avatarUrl = Storage::url($settings->brand_logo);
+        }
+
+        return $avatarUrl;
     }
 
     // TODO

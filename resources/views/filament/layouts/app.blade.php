@@ -139,8 +139,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        //-->
                                         </div>
                                     </div>
                                     <div>
@@ -306,25 +306,29 @@
                     <p class="text-base-content">Közösség a tudományért
                     </p>
                 </aside>
+
                 <nav class="text-base-content">
-                    <h6 class="footer-title">Services</h6>
-                    <a href="#" class="link link-hover">Branding</a>
-                    <a href="#" class="link link-hover">Design</a>
-                    <a href="#" class="link link-hover">Marketing</a>
-                    <a href="#" class="link link-hover">Advertisement</a>
+                    <h6 class="footer-title">Rólunk</h6>
+                    <a href="#" class="link link-hover">Impresszum</a>
+                    <a href="#" class="link link-hover">Bemutatkozás</a>
                 </nav>
+
+                @php
+                    $menuItems = \App\Models\Menu\PublicMenu::getTree('dosz-footer-menu');
+                @endphp
                 <nav class="text-base-content">
-                    <h6 class="footer-title">Company</h6>
-                    <a href="#" class="link link-hover">About us</a>
-                    <a href="#" class="link link-hover">Contact</a>
-                    <a href="#" class="link link-hover">Jobs</a>
-                    <a href="#" class="link link-hover">Press kit</a>
-                </nav>
-                <nav class="text-base-content">
-                    <h6 class="footer-title">Legal</h6>
-                    <a href="#" class="link link-hover">Terms of use</a>
-                    <a href="#" class="link link-hover">Privacy policy</a>
-                    <a href="#" class="link link-hover">Cookie policy</a>
+                    <h6 class="footer-title">{{ __('public.title.documents') }}</h6>
+                    @foreach ($menuItems as $menuItem)
+                        @if (count($menuItem->subs))
+                            <a href="#" class="link link-hover">About us</a>
+                        @else
+                            @if ($menuItem->type === 'external')
+                                <a href="{{ $menuItem->route }}">{{ $menuItem->name }}</a>
+                            @else
+                                <a href="{{ route($menuItem->route, $menuItem->params) }}">{{ $menuItem->name }}</a>
+                            @endif
+                        @endif
+                    @endforeach
                 </nav>
             </footer>
 

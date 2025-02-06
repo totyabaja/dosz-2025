@@ -32,7 +32,10 @@ class PublicPageController extends Controller
     {
         $page = Menu\Page::where('slug', $slug)
             ->orderBy('version', 'desc')
-            ->firstOrFail();
+            ->first();
+
+        if (!$page)
+            return abort(404);
 
         return view('filament.pages.public.show', compact('page'));
     }
@@ -42,7 +45,10 @@ class PublicPageController extends Controller
     {
         $page = Menu\Page::where('slug', $slug)
             ->orderBy('version', 'desc')
-            ->firstOrFail();
+            ->first();
+
+        if (!$page)
+            return abort(404);
 
         return view('filament.pages.public.to-show', compact('to_slug', 'page'));
     }
@@ -62,23 +68,37 @@ class PublicPageController extends Controller
     {
         $hir = Blog\Post::where('slug', $slug)->first();
 
+        if (!$hir)
+            return abort(404);
+
+
         return view('filament.pages.public.hir', compact('hir'));
     }
 
-    // TODO
     public function to_hirek($to_slug)
     {
+        $to = Scientific\ScientificDepartment::where('slug', $to_slug)
+            ->first();
+
+        if (!$to)
+            return abort(404);
+
         $hirek = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
-            ->where('scientific_department_id', ScientificScientificDepartment::where('slug', $to_slug)->first()->id)
+            ->where('scientific_department_id', $to->id)
             ->get();
 
         return view('filament.pages.public.to-hirek', compact('to_slug', 'hirek'));
     }
 
-    // TODO
     public function to_hir($to_slug, $slug)
     {
+        $to = Scientific\ScientificDepartment::where('slug', $to_slug)
+            ->first();
+
+        if (!$to)
+            return abort(404);
+
         $hir = Blog\Post::where('slug', $slug)->first();
 
         return view('filament.pages.public.to-hir', compact('to_slug', 'hir'));
@@ -121,11 +141,18 @@ class PublicPageController extends Controller
         return view('filament.pages.public.tok', compact('tok'));
     }
 
-    // TODO
+
     public function to($to_slug)
     {
+        $to = Scientific\ScientificDepartment::where('slug', $to_slug)
+            ->first();
+
+        if (!$to)
+            return abort(404);
+
         $slides = Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
+            ->where('scientific_department_id', $to->id)
             ->latest()
             ->paginate(3);
 
@@ -134,6 +161,7 @@ class PublicPageController extends Controller
             Blog\Post::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
             ->whereNull('scientific_department_id')
+            ->orderByDesc('created_at')
             ->get();
 
         return view('filament.pages.public.to-kezdolap', compact('to_slug', 'slides', 'dosz_hirek'));
@@ -150,25 +178,44 @@ class PublicPageController extends Controller
 
     public function rendezveny($slug)
     {
-        $rendezveny = Event\Event::where('slug', $slug)->first();
+        $rendezveny = Event\Event::where('slug', $slug)
+            ->first();
+
+        if (!$rendezveny)
+            return abort(404);
 
         return view('filament.pages.public.rendezveny', compact('rendezveny'));
     }
 
-    // TODO
     public function to_rendezvenyek($to_slug)
     {
+        $to = Scientific\ScientificDepartment::where('slug', $to_slug)
+            ->first();
+
+        if (!$to)
+            return abort(404);
+
         $rendezvenyek = Event\Event::query()
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
+            ->where('scientific_department_id', $to->id)
             ->get();
 
         return view('filament.pages.public.to-rendezvenyek', compact('to_slug', 'rendezvenyek'));
     }
 
-    // TODO
+
     public function to_rendezveny($to_slug, $slug)
     {
+        $to = Scientific\ScientificDepartment::where('slug', $to_slug)
+            ->first();
+
+        if (!$to)
+            return abort(404);
+
         $rendezveny = Event\Event::where('slug', $slug)->first();
+
+        if (!$rendezveny)
+            return abort(404);
 
         return view('filament.pages.public.to-rendezveny', compact('to_slug', 'rendezveny'));
     }
@@ -190,8 +237,13 @@ class PublicPageController extends Controller
     // TODO
     public function to_dokumentumok($to_slug, ?string $folder = null)
     {
+        $to = Scientific\ScientificDepartment::where('slug', $to_slug)
+            ->first();
 
-        $main_folder = Scientific\ScientificDepartment::where('slug', $to_slug)->first()?->folders->first();
+        if (!$to)
+            return abort(404);
+
+        $main_folder = $to?->folders->first();
 
         if ($folder)
             $main_folder = Folder::query()

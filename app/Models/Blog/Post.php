@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -59,7 +60,15 @@ class Post extends Model implements HasMedia
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->getMedia('post-banners')?->first()?->getUrl() ?? $this->getMedia('post-banners')?->first()?->getUrl('thumb') ?? null;
+        $avatarUrl = $this->getMedia('post-banners')?->first()?->getUrl()
+            ?? $this->getMedia('post-banners')?->first()?->getUrl('thumb');
+
+        if (!$avatarUrl) {
+            $settings = app(\App\Settings\GeneralSettings::class);
+            $avatarUrl = Storage::url($settings->brand_logo);
+        }
+
+        return $avatarUrl;
     }
 
     public function registerMediaConversions(Media|null $media = null): void

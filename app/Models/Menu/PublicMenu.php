@@ -62,16 +62,20 @@ class PublicMenu extends Model
             // Meghatározzuk a route és params értékeket
             $route = null;
             $params = [];
+            $type = null;
 
             if ($item->slug) {
+                $type = 'route';
                 $route = 'public.' . $item->slug;
                 $params = ['slug' => null];
             } elseif ($item->external_url) {
+                $type = 'external';
                 $route = $item->external_url; // Külső link esetén az URL-t használjuk route-ként
-                $params = ['slug' => null];
+                //$params = ['slug' => null];
             } elseif ($item->menu_page()->exists()) {
                 $page = $item->menu_page()->first();
                 if ($page) {
+                    $type = 'route';
                     $route = 'public.pages';
                     $params = ['slug' => $page->slug];
                 }
@@ -79,6 +83,7 @@ class PublicMenu extends Model
 
 
             return (object) [
+                'type' => $type,
                 'route' => $route,
                 'params' => $params,
                 'name' => __($item->label[session()->get('locale', 'hu')]),
