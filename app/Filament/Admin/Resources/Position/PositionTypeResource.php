@@ -34,7 +34,7 @@ class PositionTypeResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Section::make()->schema([
-                    Forms\Components\Repeater::make('subtypes') // Kapcsolódó PositionSubType
+                    Forms\Components\Repeater::make('subtypes') // Kapcsolódó PositionSubtype
                         ->relationship('subtypes') // Ezt a modellben kell definiálni
                         ->schema([
                             Forms\Components\TextInput::make('name.hu')

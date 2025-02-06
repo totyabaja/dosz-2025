@@ -26,7 +26,7 @@ class Position extends Model
 
     public function position_subtype(): BelongsTo
     {
-        return $this->belongsTo(PositionSubType::class);
+        return $this->belongsTo(PositionSubtype::class);
     }
 
     function user(): BelongsTo

@@ -14,6 +14,6 @@ class PositionType extends Model
 
     public function subtypes(): HasMany
     {
-        return $this->hasMany(PositionSubType::class);
+        return $this->hasMany(PositionSubtype::class);
     }
 }
