@@ -9,11 +9,14 @@ use App\Models\User;
 use App\Settings\MailSettings;
 use Exception;
 use Filament\Facades\Filament;
+use Filament\Infolists;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Auth\VerifyEmail;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -45,6 +48,62 @@ class UserResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('resource.title.users');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Group::make()
+                    ->schema([
+                        SpatieMediaLibraryImageEntry::make('media')
+                            ->hiddenLabel()
+                            ->disk('public')
+                            ->collection('user-avatars')
+                            ->alignCenter()
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpan(1),
+
+                Infolists\Components\Tabs::make()
+                    ->schema([
+                        Infolists\Components\Tabs\Tab::make('Details')
+                            ->icon('heroicon-o-information-circle')
+                            ->schema([
+                                Infolists\Components\Fieldset::make(__('title.full_name'))
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('firstname')
+                                            ->label(__('Firstname')),
+
+                                        Infolists\Components\TextEntry::make('lastname')
+                                            ->label(__('Lastname')),
+                                    ]),
+
+                                Infolists\Components\TextEntry::make('email')
+                                    ->label(__('Email')),
+                            ])
+                            ->columns(2),
+
+                        Infolists\Components\Tabs\Tab::make('Roles')
+                            ->icon('fluentui-shield-task-48')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('roles')
+                                    ->label(__('Roles'))
+                                    ->listWithLineBreaks()
+                                    ->bulleted(),
+
+                                Infolists\Components\TextEntry::make('scientific_departments')
+                                    ->label(__('Scientific Departments'))
+                                    ->listWithLineBreaks()
+                                    ->bulleted(),
+                            ]),
+                    ])
+                    ->columnSpan([
+                        'sm' => 1,
+                        'lg' => 2
+                    ]),
+            ])
+            ->columns(3);
     }
 
     public static function form(Form $form): Form

@@ -130,6 +130,9 @@ return [
         'billing_address' => 'Billing address',
         'publications' => 'Publications',
         'abstract' => 'abstract',
+        'pending_memberships' => 'Pending memberships',
+        'new_membership_request' => 'Request for new membership',
+        'memberships' => 'Memberships',
     ],
 
     'messages' => [

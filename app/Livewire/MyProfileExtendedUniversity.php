@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Filament\Components\ApprovedMembershipsComponent;
 use App\Filament\Pages\Registration;
 use App\Models\User;
 use App\Models\Scientific;
@@ -36,10 +37,12 @@ class MyProfileExtendedUniversity extends MyProfileComponent
 
     public $user;
 
+
     public function mount(): void
     {
         $this->fillForm();
     }
+
 
     protected function fillForm(): void
     {
@@ -150,100 +153,129 @@ class MyProfileExtendedUniversity extends MyProfileComponent
 
     protected static function getMembershipFormContent(): array
     {
+        $user = Auth::user();
+
+
+        // 1. Folyamatban lévő kérelmek (még nem elfogadott tagságok)
+        $pendingDepartments = $user->scientific_department_users()
+            ->where('accepted', false)
+            ->with('scientific_department')
+            ->get();
+
+        // 2. Meglévő tagságok (elfogadott tagságok)
+        $approvedDepartments = $user->scientific_department_users()
+            ->where('accepted', true)
+            ->with('scientific_department')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    "department_name" => $item->scientific_department->filament_name,
+                    "accepted" => $item->accepted,
+                ];
+            })
+            ->toArray();
+
+        // 3. Azon osztályok lekérése, amelyekhez még nincs tagság
+        $availableDepartments = \App\Models\Scientific\ScientificDepartment::query()
+            ->whereNotIn('id', $user->scientific_department_users->pluck('scientific_department_id'))
+            ->get()
+            ->mapWithKeys(fn($item) => [$item->id => $item->filament_name]);
+
+
         return [
-            Forms\Components\Section::make('scientific_department_section')
-                ->label('Tudományos osztály tagságok')
-                ->hiddenLabel(false)
+            // 1. Folyamatban lévő kérelmek megjelenítése
+            Forms\Components\Section::make(mb_ucfirst(__('resource.tabs.pending_memberships')))
+                ->schema(
+                    $pendingDepartments->isEmpty()
+                        ? [Forms\Components\Placeholder::make('no_pending')
+                            ->hiddenLabel()
+                            ->content('Nincs folyamatban lévő kérelmed.')]
+                        : $pendingDepartments->map(
+                            function ($membership) {
+                                return Forms\Components\Grid::make(6)
+                                    ->schema([
+                                        // Kérelem megjelenítése
+                                        Forms\Components\Placeholder::make('membership_name')
+                                            ->label($membership->scientific_department->filament_name)
+                                            ->content("Kérelem dátuma: " . $membership->request_datetime->format('Y-m-d'))
+                                            ->columnSpan(4),
+
+                                        // Visszavonás gomb hozzáadása
+                                        Forms\Components\Actions::make([
+                                            Action::make('cancel_request_' . $membership->id)  // Egyedi azonosító minden kéréshez
+                                                ->label('Visszavonás')
+                                                ->color('danger')
+                                                ->icon('heroicon-o-trash')
+                                                ->requiresConfirmation()  // Megerősítés kérés
+                                                ->action(function () use ($membership) {
+                                                    $membership->delete();
+
+                                                    // Értesítés a felhasználónak
+                                                    \Filament\Notifications\Notification::make()
+                                                        ->title('Kérelem visszavonva')
+                                                        ->body("A(z) {$membership->scientific_department->filament_name} tagsági kérelmed visszavonásra került.")
+                                                        ->success()
+                                                        ->send();
+
+                                                    // Frissíti a formot, hogy eltűnjön a visszavont kérelem
+                                                    $membership->refresh();
+                                                }),
+                                        ])->columnSpan(2)
+                                    ]);
+                            }
+                        )->toArray()
+                ),
+
+            // 2. Új tagsági kérelem benyújtása
+            Forms\Components\Section::make(mb_ucfirst(__('resource.tabs.new_membership_request')))
                 ->schema([
-                    Forms\Components\Repeater::make('scientific_department_users')
-                        ->relationship('scientific_department_users')
-                        ->hiddenLabel()
-                        ->reorderable(false)
-                        ->deletable(false)
+                    Forms\Components\Grid::make(6)
                         ->schema([
-                            Forms\Components\Grid::make([
-                                'default' => 6,
-                            ])
-                                ->schema([
-                                    // Scientific Department select
-                                    Forms\Components\Select::make('scientific_department_id')
-                                        ->relationship('scientific_department', 'id')
-                                        ->options(
-                                            fn() => Scientific\ScientificDepartment::all()
-                                                ->sortBy('filament_name')
-                                                ->pluck('name.' . session()->get('locale', 'hu'), 'id')
-                                                ->toArray(),
-                                        )
-                                        ->searchable()
-                                        ->preload()
-                                        ->disabled(fn($get) => $get('id') != null) // Engedélyezett csak új elemnél
-                                        ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                        ->columnSpan(2),
+                            Forms\Components\Select::make('scientific_department_id')
+                                ->label('Válaszd ki a tudományos osztályt')
+                                ->options($availableDepartments)
+                                ->searchable()
+                                ->preload()
+                                ->live()
+                                ->columnSpan(4)
+                                ->suffixAction(
+                                    Forms\Components\Actions\Action::make('request_membership')
+                                        ->label('Tagság igénylése')
+                                        ->color('primary')
+                                        ->icon('heroicon-o-check')
+                                        ->action(function ($get, $set, $record) use ($user) {
+                                            $departmentId = $get('scientific_department_id');
 
-                                    // Checkbox - Accepted
-                                    Forms\Components\Checkbox::make('pivot.accepted')
-                                        ->label('Tag?')
-                                        ->hidden(fn($get) => $get('id') == null) // Csak meglévő elemnél látható
-                                        ->disabled(),
-
-                                    // DateTime Pickers - Meglévő adatokhoz
-                                    Forms\Components\DateTimePicker::make('pivot.request_datetime')
-                                        ->label('Request_date')
-                                        ->hidden(fn($get) => $get('id') == null)
-                                        ->disabled(),
-
-                                    Forms\Components\DateTimePicker::make('pivot.acceptance_datetime')
-                                        ->label('Acceptance_date')
-                                        ->hidden(fn($get) => $get('id') == null)
-                                        ->disabled(),
-
-                                    // Akciók
-                                    Actions::make([
-                                        // Visszavonás - Csak meglévő elemnél látható
-                                        Actions\Action::make('visszavonas_scientific_department')
-                                            ->label('Visszavonás')
-                                            ->color('danger')
-                                            ->icon('heroicon-o-trash')
-                                            ->disabled(fn($get) => $get('id') == null)
-                                            ->action(function ($record) {
-                                                // Új kapcsolat létrehozása
-                                                $record->delete();
-
-                                                Notification::make()
-                                                    ->title('Új tagsági igény visszavonása')
-                                                    ->body('A tagsági igényét a(z) ' . ($record->scientific_department->name) . ' sikeresen megküldte.')
-                                                    ->success()
-                                                    ->send();
-                                            }),
-                                    ])->hidden(fn($get) => $get('id') == null),
-                                    Actions::make([
-                                        // Tagság igénylése - Csak új elemnél látható
-                                        Actions\Action::make('save_scientific_department')
-                                            ->label('Tagság igénylése')
-                                            ->color('primary')
-                                            ->icon('heroicon-o-check')
-                                            // ->hidden(fn ($get) => $get('id') != null)
-                                            ->action(function ($set, $get) {
-                                                // Új kapcsolat létrehozása
-                                                $user = \App\Models\User::findOrFail($get('../../id'));
+                                            if ($departmentId) {
                                                 $user->scientific_department_users()->create([
-                                                    'scientific_department_id' => $get('scientific_department_id'),
+                                                    'scientific_department_id' => $departmentId,
                                                     'request_datetime' => now(),
-                                                    'accepted' => false, // Alapértelmezett érték
+                                                    'accepted' => false,
                                                 ]);
 
                                                 Notification::make()
-                                                    ->title('Új tagsági igény megküldve')
-                                                    ->body('A tagsági igényét a(z) ' . (Scientific\ScientificDepartment::findOrFail($get('scientific_department_id'))->filament_name) . ' sikeresen megküldte.')
+                                                    ->title('Tagsági igény megküldve')
+                                                    ->body('A(z) ' . \App\Models\Scientific\ScientificDepartment::find($departmentId)->filament_name . ' tagsági igényét sikeresen megküldte.')
                                                     ->success()
                                                     ->send();
-                                            }),
-                                    ])->hidden(fn($get) => $get('id') != null),
-                                ]),
-                        ])
-                        ->columnSpanFull(),
 
+                                                $record->refresh();
+                                                $set('scientific_department_id', null);
+                                            }
+                                        })
+                                        ->disabled(fn($get) => $get('scientific_department_id') === null),
+
+                                ),
+                        ])
                 ]),
+
+            // 3. Meglévő tagságok megjelenítése Repeater-rel
+            Forms\Components\Section::make(mb_ucfirst(__('resource.tabs.memberships')))
+                ->schema([
+                    ApprovedMembershipsComponent::make('approved_memberships')
+                        ->approvedDepartments($approvedDepartments),
+                ])
+
         ];
     }
 

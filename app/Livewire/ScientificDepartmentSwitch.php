@@ -26,7 +26,17 @@ class ScientificDepartmentSwitch extends Component
 
     public function render()
     {
-        $departments = Auth::user()->scientific_departments;
+        // Jogosultság alapú döntés
+        if (Auth::user()->hasRole('super_admin')) {
+            // Ha super_admin, az összes ScientificDepartment-et lekérjük
+            $departments = ScientificDepartment::all();
+        } elseif (Auth::user()->isToAdmin()) {
+            // Ha TO admin, csak a hozzá tartozókat kérjük le
+            $departments = Auth::user()->scientific_departments;
+        } else {
+            // Ha egyik sem, akkor üres gyűjtemény
+            $departments = collect();  // Üres Collection, hogy ne okozzon hibát később
+        }
 
         return view('livewire.scientific-department-switch', [
             'departments' => $departments

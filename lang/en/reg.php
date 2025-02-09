@@ -27,5 +27,6 @@ return [
 
     'message' => [
         'don_not_email' => 'Do not use the following mail domains: yahoo.com, *.cc, freemail.hu, citromail.hu',
+        'tab_help' => 'Type , or press TAB to seperate each.',
     ],
 ];

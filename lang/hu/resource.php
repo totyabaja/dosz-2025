@@ -107,6 +107,9 @@ return [
         'billing_address' => 'Számlázási cím',
         'publications' => 'Publikációk',
         'abstract' => 'absztrakt',
+        'pending_memberships' => 'Folyamatban lévő tagsági kérelmek',
+        'new_membership_request' => 'Új tagság itányti kérelem benyújtása',
+        'memberships' => 'Meglévő tagságok',
     ],
     'messages' => [
         'saved_title' => ':elem mentve',

@@ -18,13 +18,13 @@ class ExtraFormForm
     public static function schema(CustomForm $customForm, EventRegistration $event_reg, string $attribute_name): array
     {
         $content = $customForm->content;
-        $responses = $event_reg->{$attribute_name} ?? null;
+        $responses = $event_reg->{$attribute_name} ?? '';
 
 
         $formComponents = [
             // TODO: valamiért nem látja
             Hidden::make('custom_form_id')
-                ->default($customForm->id ?? null)
+                ->default($customForm->id ?? '')
                 //->dehydrated(false)
                 ->afterStateHydrated(fn($set) => $set('custom_form_id', $customForm->id))
                 ->required(),
@@ -38,53 +38,56 @@ class ExtraFormForm
             switch ($type) {
                 case 'text_input':
                     $formComponents[] = TextInput::make("{$attribute_name}.{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
-                        ->placeholder($data['placeholder'] ?? '')
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
+                        ->placeholder($data['placeholder'][session()->get('locale', 'hu')] ?? '')
                         ->required($data['required'] ?? false)
-                        ->hint($data['hint'] ?? null)
-                        ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
+                        ->hint($data['hint'][session()->get('locale', 'hu')] ?? '')
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? '')
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? '') : $state);
                     break;
 
                 case 'select':
-                    $options = collect($data['options'] ?? [])->pluck('value', 'id')->toArray();
+                    $options = collect($data['options'] ?? [])->mapWithKeys(function ($option) {
+                        return [$option['id'] => $option['value'][session()->get('locale', 'hu')] ?? ''];
+                    })->toArray();
+
                     $formComponents[] = Select::make("{$attribute_name}.{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
                         ->options($options)
                         ->native(false)
                         ->multiple($data['multiple'] ?? false)
                         ->required($data['required'] ?? false)
-                        ->hint($data['hint'] ?? null)
-                        ->helperText($data['helperText'] ?? null)
-                        ->placeholder($data['placeholder'] ?? null)
-                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
+                        ->hint($data['hint'][session()->get('locale', 'hu')] ?? '')
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? '')
+                        ->placeholder($data['placeholder'][session()->get('locale', 'hu')] ?? '')
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? '') : $state);
                     break;
 
                 case 'checkbox':
                     $formComponents[] = Checkbox::make("{$attribute_name}.{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
-                        ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? '')
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? '') : $state);
                     break;
 
                 case 'radio':
                     $options = collect($data['options'] ?? [])->pluck('value', 'value')->toArray();
                     $formComponents[] = Radio::make("{$attribute_name}.{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
                         ->options($options)
                         ->required($data['required'] ?? false)
-                        ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? '')
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? '') : $state);
                     break;
 
                 case 'textarea':
                     $formComponents[] = Textarea::make("{$attribute_name}.{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
                         ->placeholder($data['placeholder'] ?? '')
                         ->required($data['required'] ?? false)
-                        ->hint($data['hint'] ?? null)
-                        ->helperText($data['helperText'] ?? null)
-                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? null) : $state);
+                        ->hint($data['hint'][session()->get('locale', 'hu')] ?? '')
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? '')
+                        ->formatStateUsing(fn($operation, $state) => $operation == 'edit' ? ($responses[$data['id']] ?? '') : $state);
                     break;
             }
         }

@@ -9,6 +9,8 @@ use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
 use App\Livewire\{MyProfileExtended, MyProfileExtendedUniversity};
 use Filament\Http\Middleware\{Authenticate, DisableBladeIconComponents, DispatchServingFilamentEvent};
 use App\Filament\ToAdmin\Widgets\DepartmentInfoWidget;
+use App\Filament\ToAdmin\Widgets\MembershipRequests;
+use App\Models\Scientific\ScientificDepartment;
 use App\Settings\GeneralSettings;
 use Illuminate\Cookie\Middleware\{AddQueuedCookiesToResponse, EncryptCookies};
 use Filament\Enums\ThemeMode;
@@ -39,7 +41,9 @@ class ToAdminPanelProvider extends PanelProvider
             ->defaultThemeMode(ThemeMode::Light)
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
-                fn(): View => view('filament.components.button-website', ['link' => route('public.to', \App\Models\Scientific\ScientificDepartment::find(session()->get('sd_selected'))->slug)]),
+                fn(): View => view('filament.components.button-website', [
+                    'link' => route('public.to', self::getScientificDepartmentSlug())
+                ]),
             )
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
@@ -84,6 +88,7 @@ class ToAdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 //Widgets\FilamentInfoWidget::class,
                 DepartmentInfoWidget::class,
+                MembershipRequests::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -140,5 +145,38 @@ class ToAdminPanelProvider extends PanelProvider
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
 
             ]);
+    }
+
+    public function getScientificDepartmentSlug()
+    {
+        $user = Auth::user();
+
+        // 1. Ha van session érték, használjuk azt
+        $sessionSelected = session()->get('sd_selected');
+        if ($sessionSelected) {
+            $department = ScientificDepartment::find($sessionSelected);
+            if ($department) {
+                return $department->slug;
+            }
+        }
+
+        // 2. Ha a felhasználó super_admin, válaszd az első ScientificDepartment-et
+        if ($user->hasRole('super_admin')) {
+            $department = ScientificDepartment::first();
+            if ($department) {
+                return $department->slug;
+            }
+        }
+
+        // 3. Ha a felhasználó isToAdmin() = true, válaszd a reláció első elemét
+        if ($user->isToAdmin()) {
+            $department = $user->scientific_departments()->first();
+            if ($department) {
+                return $department->slug;
+            }
+        }
+
+        // 4. Alapértelmezett visszatérési érték (ha semmi nem található)
+        return 'default-slug';
     }
 }

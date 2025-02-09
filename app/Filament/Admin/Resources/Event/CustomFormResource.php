@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Event;
 
 use App\Filament\Admin\Resources\Event\CustomFormResource\Pages;
 use App\Models\Event\CustomForm;
+use App\Models\Scientific;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,14 +18,34 @@ class CustomFormResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getModelLabel(): string
+    {
+        return __('resource.title.custom_form');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resource.title.custom_forms');
+    }
+
     public static function customFormmainElements(): array
     {
         return [
-            Forms\Components\Hidden::make('id')
-                ->default(fn(): string => Str::uuid()),
-            Forms\Components\TextInput::make('title')
-                ->label('title')
-                ->required(),
+            Forms\Components\Grid::make([
+                'default' => 1,
+                'md' => 4
+            ])->schema([
+                Forms\Components\Hidden::make('id')
+                    ->default(fn(): string => Str::uuid()),
+                Forms\Components\TextInput::make('title.hu')
+                    ->label(mb_ucfirst(__('resource.components.name_hungarian')))
+                    ->columnSpan(2)
+                    ->required(),
+                Forms\Components\TextInput::make('title.en')
+                    ->label(mb_ucfirst(__('resource.components.name_english')))
+                    ->columnSpan(2)
+                    ->required(),
+            ])
         ];
     }
 
@@ -32,13 +53,26 @@ class CustomFormResource extends Resource
     {
         return [
             Forms\Components\Section::make(mb_ucfirst('További opciók'))
+                ->columns([
+                    'default' => 1,
+                    'md' => 2
+                ])
                 ->schema([
-                    Forms\Components\TextInput::make('helperText')
-                        ->label('helperText'),
-                    Forms\Components\TextInput::make('hint')
-                        ->label('hint'),
-                    Forms\Components\TextInput::make('placeholder')
-                        ->label('placeholder'),
+                    Forms\Components\TextInput::make('helperText.hu')
+                        ->label('resource.components.helperText_hu'),
+                    Forms\Components\TextInput::make('helperText.en')
+                        ->label('resource.components.helperText_en'),
+
+                    Forms\Components\TextInput::make('hint.hu')
+                        ->label('resource.components.hint_hu'),
+                    Forms\Components\TextInput::make('hint.en')
+                        ->label('resource.components.hint_en'),
+
+                    Forms\Components\TextInput::make('placeholder.hu')
+                        ->label('resource.components.placeholder_hu'),
+                    Forms\Components\TextInput::make('placeholder.en')
+                        ->label('resource.components.placeholder_en'),
+
                     Forms\Components\Toggle::make('required')
                         ->label('required')
                         ->required(),
@@ -62,7 +96,7 @@ class CustomFormResource extends Resource
 
                 Forms\Components\Builder::make('content')
                     ->blockNumbers(false)
-                    // ->blockPreviews()
+                    //->blockPreviews()
                     ->collapsible(true)
                     ->collapsed(fn($operation) => $operation == 'edit')
                     ->reorderableWithButtons()
@@ -100,7 +134,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Text Input'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Text Input'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Text Input'));
                             }),
                         Forms\Components\Builder\Block::make('select')
                             ->icon('fas-list-check')
@@ -109,16 +143,62 @@ class CustomFormResource extends Resource
 
                                 Forms\Components\Toggle::make('multiple')
                                     ->label('multi select'),
+
+                                Forms\Components\Select::make('preload_options')
+                                    ->label('pre_load_options')
+                                    ->options([
+                                        'scientific_departments' => 'Tudományos Osztályok',
+                                        'scientific_fields' => 'Tudományterületek',
+                                    ])
+                                    ->suffixAction(
+                                        Forms\Components\Actions\Action::make('addPreLoaded')
+                                            ->label(mb_ucfirst(__('resource.button.load')))
+                                            ->action(function ($set, $state) {
+                                                switch ($state) {
+                                                    case 'scientific_departments':
+                                                        $departments = Scientific\ScientificDepartment::active()
+                                                            ->get()
+                                                            ->map(function ($item) {
+                                                                return [
+                                                                    'id' => $item->id,
+                                                                    'value' => [
+                                                                        'hu' => $item->name['hu'],
+                                                                        'en' => $item->name['en'],
+                                                                    ],
+                                                                ];
+                                                            })->toArray();
+
+                                                        $set('options', $departments);
+                                                        break;
+                                                    case 'scientific_fields':
+                                                        $subfields = Scientific\ScientificField::all()
+                                                            ->map(function ($item) {
+                                                                return [
+                                                                    'id' => $item->id,
+                                                                    'value' => [
+                                                                        'hu' => $item->name['hu'],
+                                                                        'en' => $item->name['en'],
+                                                                    ],
+                                                                ];
+                                                            })->toArray();
+                                                        $set('options', $subfields);
+                                                        break;
+                                                }
+                                            })
+                                    ),
+
                                 Forms\Components\Repeater::make('options')
                                     ->required()
                                     ->columnSpanFull()
-                                    ->columns(3)
+                                    ->columns(5)
                                     ->schema([
                                         Forms\Components\TextInput::make('id')
-                                            ->disabledOn('edit')
                                             ->afterStateHydrated(fn($state) => Str::slug($state)),
-                                        Forms\Components\TextInput::make('value')
-                                            ->label('érték')
+                                        Forms\Components\TextInput::make('value.hu')
+                                            ->label('érték HU')
+                                            ->columnSpan(2),
+                                        Forms\Components\TextInput::make('value.en')
+                                            ->label('érték EN')
                                             ->columnSpan(2),
                                     ])
                                     ->minItems(1)
@@ -132,7 +212,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Select'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Select'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Select'));
                             }),
                         Forms\Components\Builder\Block::make('checkbox')
                             ->icon('fas-square-check')
@@ -147,7 +227,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Checkbox'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Checkbox'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Checkbox'));
                             }),
                         Forms\Components\Builder\Block::make('toggle')
                             ->icon('fas-toggle-off')
@@ -161,7 +241,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Toggle'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Toggle'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Toggle'));
                             }),
                         Forms\Components\Builder\Block::make('checkbox_list')
                             ->icon('fas-list-check')
@@ -175,7 +255,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Checkbox list'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Checkbox list'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Checkbox list'));
                             }),
                         Forms\Components\Builder\Block::make('datetime_picker')
                             ->icon('fas-calendar')
@@ -189,7 +269,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('DateTime picker'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('dateTime picker'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('dateTime picker'));
                             }),
                         Forms\Components\Builder\Block::make('file_upload')
                             ->icon('fas-file-arrow-up')
@@ -203,7 +283,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('File Upload'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('File Upload'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('File Upload'));
                             }),
                         Forms\Components\Builder\Block::make('rich_editor')
                             ->icon('fas-file-word')
@@ -217,7 +297,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Rich Editor'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Rich editor'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Rich editor'));
                             }),
                         Forms\Components\Builder\Block::make('tags_input')
                             ->icon('fas-tags')
@@ -231,7 +311,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Tags Input'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Tags Input'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Tags Input'));
                             }),
                         Forms\Components\Builder\Block::make('text_area')
                             ->icon('fas-file-word')
@@ -245,7 +325,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Text area'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Text area'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Text area'));
                             }),
                         Forms\Components\Builder\Block::make('toggle_buttons')
                             ->schema([
@@ -258,7 +338,7 @@ class CustomFormResource extends Resource
                                     return mb_ucfirst(__('Toggle Button'));
                                 }
 
-                                return $state['title'] ?? mb_ucfirst(__('Toggle Button'));
+                                return $state['title']['hu'] ?? mb_ucfirst(__('Toggle Button'));
                             }),
                     ]),
             ]);

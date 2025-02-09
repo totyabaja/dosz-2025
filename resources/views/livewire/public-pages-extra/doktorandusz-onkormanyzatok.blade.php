@@ -1,7 +1,8 @@
 <div class="not-prose">
     <div class="max-w-none">
-        <div class="flex justify-end">
+        <div class="flex justify-end mb-3">
             <div class="relative sm:w-full md:w-[200px]">
+                Keresés
                 <input type="text" placeholder="Keresés..."
                     class="w-full p-2 border rounded-md input input-floating peer"
                     wire:model.live.debounce.500ms='search' />
