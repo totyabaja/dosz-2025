@@ -3,8 +3,8 @@
 @section('title', __('resource.title.legal_aid'))
 
 @php
-    $doctoral_schools = \App\Models\Scientific\DoctoralSchool::orderBy(mb_ucfirst(__('reg.fieldset.full_name')))->get();
-    $universities = \App\Models\Scientific\University::orderBy(mb_ucfirst(__('reg.fieldset.full_name')))->get();
+    $doctoral_schools = \App\Models\Scientific\DoctoralSchool::active()->get()->sortBy('filament_full_name');
+    $universities = \App\Models\Scientific\University::active()->get()->sortBy('filament_full_name');
 @endphp
 
 @section('content')
@@ -87,36 +87,4 @@
     <!-- Jogsegély Modal END -->
 
 
-
-    <!-- Form Modal -->
-    <div id="form-modal" class="fixed inset-0 items-center justify-center hidden bg-black bg-opacity-50">
-        <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 class="mb-4 text-xl font-semibold">Jogsegélykérdés Küldése</h2>
-            <form id="legal-aid-form" action="#" method="POST">
-                <div class="mb-4">
-                    <label for="first_name" class="block text-sm font-medium">Vezetéknév</label>
-                    <input type="text" id="first_name" name="first_name" class="w-full p-2 border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="last_name" class="block text-sm font-medium">Keresztnév</label>
-                    <input type="text" id="last_name" name="last_name" class="w-full p-2 border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium">E-mail</label>
-                    <input type="email" id="email" name="email" class="w-full p-2 border-gray-300 rounded">
-                </div>
-                <div class="mb-4">
-                    <input type="checkbox" id="confirm_1" name="confirm_1">
-                    <label for="confirm_1" class="text-sm">Elfogadom az Adatvédelmi Tájékoztatót</label>
-                </div>
-                <div class="mb-4">
-                    <input type="checkbox" id="confirm_2" name="confirm_2">
-                    <label for="confirm_2" class="text-sm">Hozzájárulok az adataim kezeléséhez</label>
-                </div>
-                <button type="submit"
-                    class="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">Küldés</button>
-            </form>
-        </div>
-
-    </div>
 @endsection

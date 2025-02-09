@@ -24,7 +24,7 @@ class DoktoranduszOnkormanyzatok extends Component
     {
         $universities = University::query()
             ->when($this->search !== '', function ($query) {
-                $query->where('full_name', 'like', "%{$this->search}%");
+                $query->whereRaw("LOWER(JSON_UNQUOTE(full_name->'$.hu')) LIKE ?", ['%' . strtolower($this->search) . '%']);
             })
             ->get()
             ->sortBy('filament_full_name');

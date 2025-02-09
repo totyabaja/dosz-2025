@@ -13,7 +13,7 @@ class ScientificDepartments extends Component
     {
         $tos = ScientificDepartment::active()
             ->when($this->search != '', function ($query) {
-                $query->where('name', 'like', "%{$this->search}%");
+                $query->whereRaw("LOWER(JSON_UNQUOTE(name->'$.hu')) LIKE ?", ['%' . strtolower($this->search) . '%']);
             })
             ->get()
             ->sortBy('filament_name');

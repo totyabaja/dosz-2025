@@ -22,24 +22,23 @@ class Registration extends Register
         return $form
             ->schema([
                 Forms\Components\Wizard::make([
-                    Forms\Components\Wizard\Step::make(__('reg.menu.personal'))
+                    Forms\Components\Wizard\Step::make(mb_ucfirst(__('reg.menu.personal')))
                         ->schema(
                             $this->getPersonalFormContent(),
                         ),
-                    Forms\Components\Wizard\Step::make(__('reg.menu.contact'))
+                    Forms\Components\Wizard\Step::make(mb_ucfirst(__('reg.menu.contact')))
                         ->schema([
-
                             ...$this->getContactFormContent(),
                         ]),
-                    Forms\Components\Wizard\Step::make(__('reg.menu.scientific'))
+                    Forms\Components\Wizard\Step::make(mb_ucfirst(__('reg.menu.scientific')))
                         ->schema(
                             $this->getGeneralFormContent(),
                         ),
-                    Forms\Components\Wizard\Step::make('Extra')
+                    Forms\Components\Wizard\Step::make(mb_ucfirst(__('reg.menu.extra')))
                         ->schema(
                             $this->getExtraFormContent(),
                         ),
-                    Forms\Components\Wizard\Step::make('Finalize')
+                    Forms\Components\Wizard\Step::make(mb_ucfirst(__('reg.menu.finalize')))
                         ->schema(
                             $this->getFinalizeRegContent(),
                         ),
@@ -69,20 +68,19 @@ class Registration extends Register
                     ->label(mb_ucfirst(__('resource.components.lastname')))
                     ->required()
                     ->minLength(2)
-                    ->maxLength(255)
-                    ->hint('Vezetéknév'),
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('firstname')
                     ->label(mb_ucfirst(__('resource.components.firstname')))
                     ->required()
                     ->minLength(2)
-                    ->maxLength(255)
-                    ->hint('Keresztnév'),
+                    ->maxLength(255),
             ]),
 
             Forms\Components\Fieldset::make('logins')
                 ->label(mb_ucfirst(__('reg.fieldset.login_values')))
                 ->schema([
-                    $this->getEmailFormComponent(),
+                    $this->getEmailFormComponent()
+                        ->helperText(__('reg.message.don_not_email')),
                     $this->getPasswordFormComponent()
                         ->columnStart(1),
                     $this->getPasswordConfirmationFormComponent(),
@@ -94,7 +92,7 @@ class Registration extends Register
     public static function getContactFormContent(): array
     {
         return [
-            Forms\Components\Fieldset::make(__('reg.fieldset.contacts'))
+            Forms\Components\Fieldset::make(mb_ucfirst(__('reg.fieldset.contacts')))
                 ->schema([
                     Forms\Components\TextInput::make('email_intezmenyi')
                         ->label(mb_ucfirst(__('reg.input.email_intezmenyi')))
@@ -130,7 +128,7 @@ class Registration extends Register
                                     'Szlovákia',
                                     'Szerbia',
                                 ])
-                                ->hint(__('Enter the country name'))
+                                ->hint(__('pl.: Magyarország'))
                                 ->requiredWithAll(['postal_code', 'city', 'street'])
                                 ->columnSpan(3), // 3 résznyi helyet foglal
 
@@ -274,6 +272,7 @@ class Registration extends Register
 
                     Forms\Components\TagsInput::make('keywords')
                         ->label(mb_ucfirst(__('resource.components.keywords')))
+                        ->helperText(__('reg.message.tab_help'))
                         ->splitKeys(['Tab', ',']),
                 ]),
         ];

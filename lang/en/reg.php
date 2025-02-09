@@ -7,6 +7,7 @@ return [
         'scientific' => 'Scientific',
         'extra' => 'Extra',
         'membership' => 'Membership',
+        'finalize' => 'Finalize',
         'gdpr' => 'GDPR',
 
     ],
@@ -22,5 +23,9 @@ return [
     'input' => [
         'email_intezmenyi' => 'Intézményi e-mail',
         'mobil' => 'Mobil',
+    ],
+
+    'message' => [
+        'don_not_email' => 'Do not use the following mail domains: yahoo.com, *.cc, freemail.hu, citromail.hu',
     ],
 ];

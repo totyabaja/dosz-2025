@@ -1,0 +1,86 @@
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Table Columns
+    |--------------------------------------------------------------------------
+    */
+
+    'column.name' => 'Name',
+    'column.guard_name' => 'Guard Name',
+    'column.roles' => 'Roles',
+    'column.permissions' => 'Permissions',
+    'column.updated_at' => 'Updated At',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Form Fields
+    |--------------------------------------------------------------------------
+    */
+
+    'field.name' => 'Name',
+    'field.guard_name' => 'Guard Name',
+    'field.permissions' => 'Permissions',
+    'field.select_all.name' => 'Select All',
+    'field.select_all.message' => 'Enable all Permissions currently <span class="font-medium text-primary">Enabled</span> for this role',
+    'field.blogs.description' => 'Leírás',
+    'field.blogs.slug' => 'Rövid link',
+    'field.blogs.name' => 'Elnevezése',
+    'field.blogs.visible_to_customers' => 'Bejelentkezett felhasználóknak látható csak.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation & Resource
+    |--------------------------------------------------------------------------
+    */
+
+    'nav.post' => 'Access',
+    'nav.post.label' => 'Hírek', //
+    'nav.post.icon' => 'heroicon-o-shield-check',
+    'resource.label.post' => 'Hír', //
+    'resource.label.posts' => 'Hírek', //
+    'resource.label.category' => 'Kategória', //
+    'resource.label.categories' => 'Kategóriák', //
+
+    /*
+    |--------------------------------------------------------------------------
+    | Section & Tabs
+    |--------------------------------------------------------------------------
+    */
+
+    'section' => 'Entities',
+    'resources' => 'Resources',
+    'widgets' => 'Widgets',
+    'pages' => 'Pages',
+    'custom' => 'Custom Permissions',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Messages
+    |--------------------------------------------------------------------------
+    */
+
+    'forbidden' => 'You do not have permission to access',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resource Permissions' Labels
+    |--------------------------------------------------------------------------
+    */
+
+    'resource_permission_prefixes_labels' => [
+        'view' => 'View',
+        'view_any' => 'View Any',
+        'create' => 'Create',
+        'update' => 'Update',
+        'delete' => 'Delete',
+        'delete_any' => 'Delete Any',
+        'force_delete' => 'Force Delete',
+        'force_delete_any' => 'Force Delete Any',
+        'restore' => 'Restore',
+        'reorder' => 'Reorder',
+        'restore_any' => 'Restore Any',
+        'replicate' => 'Replicate',
+    ],
+];

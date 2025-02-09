@@ -132,16 +132,6 @@ class PublicPageController extends Controller
         return view('filament.pages.public.alt_ker', compact('faqs'));
     }
 
-    public function tok()
-    {
-        $tok = Scientific\ScientificDepartment::query()
-            ->get()
-            ->sortBy('filament_name');
-
-        return view('filament.pages.public.tok', compact('tok'));
-    }
-
-
     public function to($to_slug)
     {
         $to = Scientific\ScientificDepartment::where('slug', $to_slug)

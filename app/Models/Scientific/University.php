@@ -40,4 +40,9 @@ class University extends Model implements HasMedia, HasAvatar
     {
         return $this->full_name[session()->get('locale', 'hu')];
     }
+
+    public function scopeActive($query)
+    {
+        $query->where('active', true);
+    }
 }

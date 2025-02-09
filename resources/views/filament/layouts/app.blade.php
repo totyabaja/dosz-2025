@@ -139,8 +139,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //-->
                                         </div>
                                     </div>
                                     <div>
@@ -165,7 +165,7 @@
                                 @if (Auth::user()->isDoszAdmin())
                                     <li>
 
-                                        <a class="dropdown-item" href="{{ route('filament.to-admin.pages.dashboard') }}">
+                                        <a class="dropdown-item" href="{{ route('filament.admin.pages.dashboard') }}">
                                             <span class="icon-[tabler--receipt-rupee]"></span>
                                             Admin
                                         </a>
@@ -174,7 +174,7 @@
                                 @if (Auth::user()->isToAdmin())
                                     <li>
 
-                                        <a class="dropdown-item" href="{{ route('filament.admin.pages.dashboard') }}">
+                                        <a class="dropdown-item" href="{{ route('filament.to-admin.pages.dashboard') }}">
                                             <span class="icon-[tabler--receipt-rupee]"></span>
                                             TO Admin
                                         </a>

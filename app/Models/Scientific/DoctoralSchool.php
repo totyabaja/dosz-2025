@@ -17,11 +17,13 @@ class DoctoralSchool extends Model
         'university_id',
         'full_name',
         'short_name',
+        'active',
         'url',
     ];
 
     protected $casts = [
         'full_name' => 'array',
+        'active' => 'boolean',
     ];
 
     public function university(): BelongsTo
@@ -37,5 +39,10 @@ class DoctoralSchool extends Model
     public function getFilamentFullNameAttribute()
     {
         return $this->full_name[session()->get('locale', 'hu')];
+    }
+
+    public function scopeActive($query)
+    {
+        $query->where('active', true);
     }
 }
