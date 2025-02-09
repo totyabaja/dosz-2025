@@ -96,7 +96,7 @@ class AdminPanelProvider extends PanelProvider
                 UserStatWidget::class,
                 UserActivityStatWidget::class,
             ])
-            ->navigationGroups([
+            /*->navigationGroups([
                 NavigationGroup::make()
                     ->label(__('menu.nav_group.access')),
                 NavigationGroup::make()
@@ -109,7 +109,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label(__('menu.nav_group.legal_aid')),
                 NavigationGroup::make()
                     ->label('Admin'),
-            ])
+            ])*/
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
