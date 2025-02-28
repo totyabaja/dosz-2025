@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources\TotyaFolderManagerResource\Pages;
 
 use App\Filament\Admin\Resources\TotyaFolderManagerResource;
-use App\Filament\Admin\Resources\TotyaFolderManagerResource\Actions\{CreateSubFolderAction, GoToParentFolderAction, UploadFileToFolderAction};
+use App\Filament\Admin\Resources\TotyaFolderManagerResource\Actions\{CreateSubFolderAction, GoToParentFolderAction, LinkCollectionFolderAction, UploadFileToFolderAction};
 use App\Filament\Widgets\FolderTreeWidget;
 use Filament\Actions;
 use Filament\Forms;
@@ -83,6 +83,7 @@ class ListTotyaFolderManagers extends ListRecords
             GoToParentFolderAction::make($folder_id),
             CreateSubFolderAction::make($folder_id),
             UploadFileToFolderAction::make($folder_id),
+            LinkCollectionFolderAction::make($folder_id),
         ];
     }
 
