@@ -32,9 +32,9 @@ class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-person-chalkboard';
 
-    protected static ?string $recordTitleAttribute = 'event_name';
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getModelLabel(): string
     {

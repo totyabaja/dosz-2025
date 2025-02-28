@@ -38,7 +38,7 @@ class UserResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-s-users';
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $recordTitleAttribute = 'firstname';
 
     public static function getModelLabel(): string
     {
@@ -316,8 +316,14 @@ class UserResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'name' => $record->firstname . ' ' . $record->lastname,
+            'Name' => $record->firstname . ' ' . $record->lastname,
+            'Email' => $record->email,
         ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return UserResource::getUrl('edit', ['record' => $record]);
     }
 
     public static function getNavigationGroup(): ?string

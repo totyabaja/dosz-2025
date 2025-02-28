@@ -9,8 +9,10 @@ use Filament\Forms\Form;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 use TotyaDev\TotyaDevMediaManager\Models\Folder;
 
 class ManageScientificDepartmentFoldersPage extends ManageRelatedRecords
@@ -30,6 +32,13 @@ class ManageScientificDepartmentFoldersPage extends ManageRelatedRecords
     {
         return $table
             ->recordTitleAttribute('id')
+            ->description(new HtmlString(<<<HTML
+                    <h3 class='font-bold'>Tudományos osztály gyökér mappája</h3>
+
+                    <p>
+                       Amikor egy új tudományos osztályt hozunk létre, mindig létrejön egy gyökér mappa is. Előfordulhat, hogy hiba csúszik a műveletbe, ebben az esetben itt manuálisan is hozzárendelhetünk egy új mappát.
+                    </p>
+                HTML))
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
             ])
@@ -66,5 +75,10 @@ class ManageScientificDepartmentFoldersPage extends ManageRelatedRecords
             ->bulkActions([
                 //
             ]);
+    }
+
+    public function getHeaderWidgetsColumns(): int|string|array
+    {
+        return [];
     }
 }

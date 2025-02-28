@@ -18,16 +18,18 @@ class ScientificDepartmentResource extends Resource
 {
     protected static ?string $model = ScientificDepartment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-people-roof';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getModelLabel(): string
     {
-        return __('scientific_department');
+        return __('resource.components.scientific_department');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('scientific_departments');
+        return __('resource.components.scientific_departments');
     }
 
     public static function form(Form $form): Form
@@ -141,6 +143,6 @@ class ScientificDepartmentResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 0;
+        return 1;
     }
 }

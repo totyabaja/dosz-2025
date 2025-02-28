@@ -17,7 +17,22 @@ class ScientificStateResource extends Resource
 {
     protected static ?string $model = ScientificState::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-gears';
+
+    public static function getRecordTitleAttribute(): ?string
+    {
+        return 'name';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('resource.components.scientific_state');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resource.components.scientific_states');
+    }
 
     public static function form(Form $form): Form
     {
@@ -80,6 +95,6 @@ class ScientificStateResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 0;
+        return 4;
     }
 }

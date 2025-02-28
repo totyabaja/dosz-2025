@@ -260,16 +260,31 @@ class PublicPageController extends Controller
         if (!$to)
             return abort(404);
 
-        $main_folder = $to?->folders->first();
+        $main_folder = $to?->folder();
 
-        if ($folder)
-            $main_folder = Folder::query()
-                ->where('is_public', true)
-                ->where('collection', $folder)
-                ->first();
+        $foldersQuery =  Folder::query()
+            ->where('parent_id', $main_folder->id)
+            ->select([
+                'id',
+                'name',
+                'collection',
+                'parent_id',
+                DB::raw("'folder' as type") // Megkülönböztetéshez, hogy mappa vagy fájl
+            ]);
+        $mediaQuery = Media::query()
+            ->where('collection_name', Folder::find($main_folder->id)->collection)
+            ->select([
+                'id',
+                'name',
+                'collection_name as collection',
+                DB::raw('NULL as parent_id'), // Mert a Media táblában nincs parent_id
+                DB::raw("'media' as type") // Megkülönböztetéshez
+            ]);
 
-        $medium = Media::query()
-            ->where('collection_name', $main_folder->collection)
+        $medium = $foldersQuery
+            ->union($mediaQuery)
+            ->orderByRaw("FIELD(type, 'folder', 'media')")
+            ->orderBy('name')
             ->get();
 
         return view('filament.pages.public.to-dokumentumok', compact('to_slug', 'main_folder', 'medium'));

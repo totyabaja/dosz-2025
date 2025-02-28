@@ -21,7 +21,7 @@ class PublicMenuResource extends Resource
 {
     protected static ?string $model = PublicMenu::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-file-code';
 
     public static function getModelLabel(): string
     {
@@ -193,11 +193,11 @@ class PublicMenuResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('menu.nav_group.content');
+        return __('menu.nav_group.settings');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 1;
+        return 5;
     }
 }

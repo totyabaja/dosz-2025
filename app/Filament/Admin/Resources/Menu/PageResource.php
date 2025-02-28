@@ -229,7 +229,12 @@ class PageResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('menu.nav_group.content');
+        return __('menu.nav_group.settings');
+    }
+
+    public static function getNavigationParentItem(): ?string
+    {
+        return __('resource.title.menus');
     }
 
     public static function getNavigationSort(): ?int

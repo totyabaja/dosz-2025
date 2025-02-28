@@ -86,4 +86,9 @@ class EventStatusResource extends Resource
     {
         return __('resource.title.events');
     }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
 }

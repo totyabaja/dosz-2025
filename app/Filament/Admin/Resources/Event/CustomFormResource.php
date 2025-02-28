@@ -386,8 +386,13 @@ class CustomFormResource extends Resource
         return __('menu.nav_group.content');
     }
 
+    public static function getNavigationParentItem(): ?string
+    {
+        return __('resource.title.events');
+    }
+
     public static function getNavigationSort(): ?int
     {
-        return 0;
+        return 1;
     }
 }

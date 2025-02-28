@@ -13,7 +13,7 @@ class Position extends Model
     use HasFactory;
 
     protected $fillable = [
-        'position_type_id',
+        //'position_type_id',
         'position_subtype_id',
         'notes',
         'start_date',

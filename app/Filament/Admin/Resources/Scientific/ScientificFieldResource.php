@@ -17,15 +17,32 @@ class ScientificFieldResource extends Resource
 {
     protected static ?string $model = ScientificField::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-gears';
+
+    public static function getRecordTitleAttribute(): ?string
+    {
+        return 'name';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('resource.components.scientific_field');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resource.components.scientific_fields');
+    }
 
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpan(1),
                 Forms\Components\Repeater::make('subfields')
                     ->relationship('subfields')
                     ->schema([
@@ -33,6 +50,7 @@ class ScientificFieldResource extends Resource
                             ->label('Subfield Name')
                             ->distinct(),
                     ])
+                    ->columnSpan(2)
                     ->collapsible(), // Összecsukható a jobb átláthatóság érdekében
             ]);
     }
@@ -88,6 +106,6 @@ class ScientificFieldResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 0;
+        return 4;
     }
 }

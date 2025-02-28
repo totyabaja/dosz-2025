@@ -23,7 +23,17 @@ class TotyaFolderManagerResource extends Resource
 {
     public static ?string $model = Folder::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-folder-open';
+
+    public static function getModelLabel(): string
+    {
+        return __('resource.title.media');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('resource.title.medium');
+    }
 
     public static function table(Table $table): Table
     {

@@ -27,7 +27,7 @@ class PostResource extends Resource
 
     protected static ?string $slug = 'blog/posts';
 
-    protected static ?string $recordTitleAttribute = 'title';
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationIcon = 'fluentui-news-20';
 

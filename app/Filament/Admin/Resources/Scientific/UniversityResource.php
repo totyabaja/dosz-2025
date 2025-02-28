@@ -27,7 +27,7 @@ class UniversityResource extends Resource
 {
     protected static ?string $model = University::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-building-columns';
 
     public static function getRecordTitleAttribute(): ?string
     {
@@ -162,6 +162,6 @@ class UniversityResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 0;
+        return 2;
     }
 }

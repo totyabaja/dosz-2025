@@ -67,7 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight(fn(GeneralSettings $settings) => $settings->brand_logoHeight)
             ->colors(fn(GeneralSettings $settings) => $settings->site_theme)
             ->databaseNotifications()->databaseNotificationsPolling('30s')
-            //->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearch(false)
             ->unsavedChangesAlerts()
             ->sidebarCollapsibleOnDesktop()
@@ -84,7 +84,7 @@ class AdminPanelProvider extends PanelProvider
                 //ActivityResource::class,
                 config('filament-logger.activity_resource'),
             ])
-            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admijn\\Pages')
+            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
                 Pages\Dashboard::class,
                 ManageGeneral::class,

@@ -68,6 +68,14 @@ return [
         'positions' => 'positions',
         'position_type' => 'position_type',
         'position_types' => 'position_types',
+        'custom_form' => 'custom form',
+        'custom_forms' => 'custom forms',
+        'event_status' => 'event status',
+        'event_statuses' => 'evnt statuses',
+        'media' => 'media',
+        'medium' => 'medium',
+        'meeting' => 'meeting',
+        'meetings' => 'meetings',
     ],
 
     'components' => [
@@ -110,6 +118,8 @@ return [
         'scientific_subfields' => 'Scientific subfields',
         'scientific_departments' => 'scientific departments',
         'scientific_department' => 'scientific department',
+        'scientific_state' => 'scientific state',
+        'scientific_states' => 'scientific states',
         'universities' => 'universities',
         'university' => 'university',
         'doctoral_school' => 'doctoral_school',

@@ -70,8 +70,6 @@
                 @endif
             @endforeach
 
-
-
         </div>
     </div>
 
