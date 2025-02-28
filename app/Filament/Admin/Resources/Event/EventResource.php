@@ -34,7 +34,7 @@ class EventResource extends Resource
 
     protected static ?string $navigationIcon = 'fas-person-chalkboard';
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $recordTitleAttribute = 'name.hu';
 
     public static function getModelLabel(): string
     {
