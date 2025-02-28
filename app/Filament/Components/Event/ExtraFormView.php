@@ -29,25 +29,25 @@ class ExtraFormView
             switch ($type) {
                 case 'text_input':
                     $formComponents[] = TextEntry::make("{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
                         ->default($responses[$data['id']] ?? null);
                     break;
 
                 case 'select':
                     $options = collect($data['options'] ?? [])->pluck('value', 'id')->toArray();
                     $formComponents[] = TextEntry::make("{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
-                        ->hint($data['hint'] ?? null)
-                        ->helperText($data['helperText'] ?? null)
-                        ->placeholder($data['placeholder'] ?? null)
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
+                        ->hint($data['hint'][session()->get('locale', 'hu')] ?? null)
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? null)
+                        ->placeholder($data['placeholder'][session()->get('locale', 'hu')] ?? null)
                         ->default(isset($responses[$data['id']]) ? ($options[$responses[$data['id']]] ?? null) : null);
 
                     break;
 
                 case 'checkbox':
                     $formComponents[] = TextEntry::make("{$fieldId}")
-                        ->label($data['title'] ?? 'N/A')
-                        ->helperText($data['helperText'] ?? null)
+                        ->label($data['title'][session()->get('locale', 'hu')] ?? 'N/A')
+                        ->helperText($data['helperText'][session()->get('locale', 'hu')] ?? null)
                         ->default($responses[$data['id']] ?? null);
                     break;
 
