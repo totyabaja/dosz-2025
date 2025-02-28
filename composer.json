@@ -43,6 +43,7 @@
         "rickdbcn/filament-email": "^1.7",
         "riodwanto/filament-ace-editor": "^1.0",
         "shuvroroy/filament-spatie-laravel-health": "^2.3",
+        "solution-forest/filament-tree": "^2.1",
         "stichoza/google-translate-php": "^5.2",
         "totyadev/totyadev-media-manager": "dev-main",
         "visualbuilder/email-templates": "^3.1",

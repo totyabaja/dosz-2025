@@ -5,8 +5,10 @@ namespace TotyaDev\TotyaDevMediaManager\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use SolutionForest\FilamentTree\Concern\ModelTree;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -14,9 +16,11 @@ class Folder extends Model implements HasMedia
 {
     use InteractsWithMedia;
     use HasUuids;
+    //use ModelTree;
 
     protected $fillable = [
         'parent_id',
+        'order',
         'model_type',
         'model_id',
         'name',
@@ -86,5 +90,10 @@ class Folder extends Model implements HasMedia
     public function parent(): MorphTo
     {
         return $this->morphTo('model');
+    }
+
+    public function folder_children(): HasMany
+    {
+        return $this->hasMany(Folder::class, 'parent_id', 'id');
     }
 }

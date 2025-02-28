@@ -12,6 +12,7 @@ use App\Models\ScientificDepartment;
 use Illuminate\Http\Request;
 use App\Models\Scientific\ScientificDepartment as ScientificScientificDepartment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use TotyaDev\TotyaDevMediaManager\Models\{Folder, Media};
 
 class PublicPageController extends Controller
@@ -157,11 +158,15 @@ class PublicPageController extends Controller
         return view('filament.pages.public.to-kezdolap', compact('to_slug', 'slides', 'dosz_hirek'));
     }
 
-    public function rendezvenyek()
+    public function rendezvenyek(Request $request)
     {
         $rendezvenyek = Event\Event::query()
+            ->when($request->has('search'), function ($query) use ($request) {
+                $query->where('name->' . session()->get('locale', 'hu'), 'like', "%{$request->search}%");
+            })
             ->whereNotNull('name->' . session()->get('locale', 'hu'))
-            ->get();
+            ->orderByDesc('event_start_date')
+            ->paginate(4);
 
         return view('filament.pages.public.rendezvenyek', compact('rendezvenyek'));
     }
@@ -217,9 +222,31 @@ class PublicPageController extends Controller
             ->where('collection', $folder)
             ->first();
 
-        $medium = Media::query()
-            ->where('collection_name', $main_folder->collection)
+        $foldersQuery =  Folder::query()
+            ->where('parent_id', $main_folder->id)
+            ->select([
+                'id',
+                'name',
+                'collection',
+                'parent_id',
+                DB::raw("'folder' as type") // Megkülönböztetéshez, hogy mappa vagy fájl
+            ]);
+        $mediaQuery = Media::query()
+            ->where('collection_name', Folder::find($main_folder->id)->collection)
+            ->select([
+                'id',
+                'name',
+                'collection_name as collection',
+                DB::raw('NULL as parent_id'), // Mert a Media táblában nincs parent_id
+                DB::raw("'media' as type") // Megkülönböztetéshez
+            ]);
+
+        $medium = $foldersQuery
+            ->union($mediaQuery)
+            ->orderByRaw("FIELD(type, 'folder', 'media')")
+            ->orderBy('name')
             ->get();
+
 
         return view('filament.pages.public.dokumentumok', compact('main_folder', 'medium'));
     }

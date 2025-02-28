@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PublicPageController;
 use Illuminate\Support\Facades\Route;
+use LivewireFilemanager\Filemanager\Http\Controllers\Files\FileController;
 
 /*
 |--------------------------------------------------------------------------

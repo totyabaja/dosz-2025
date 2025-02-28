@@ -2,10 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\FileManager;
 use App\Filament\Admin\Resources\TotyaMedia\Services\FilamentMediaManagerServices;
 use App\Filament\Admin\Widgets\{UserStatWidget, UserActivityStatWidget};
 use App\Filament\Pages\Auth\{EmailVerification, Login, RequestPasswordReset};
-use App\Filament\Pages\{HealthCheckResults, Registration};
+use App\Filament\Pages\{FolderTree, HealthCheckResults, Registration};
 use App\Filament\Pages\Setting\{ManageGeneral, ManageMail};
 use App\Livewire\{MyProfileExtended, MyProfileExtendedUniversity};
 use App\Settings\GeneralSettings;
@@ -81,7 +82,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->resources([
                 //ActivityResource::class,
-                config('filament-logger.activity_resource')
+                config('filament-logger.activity_resource'),
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admijn\\Pages')
             ->pages([

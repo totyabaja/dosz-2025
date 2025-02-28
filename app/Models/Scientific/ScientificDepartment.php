@@ -3,12 +3,16 @@
 namespace App\Models\Scientific;
 
 use App\Models\User;
+use App\Models\Scientific;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use TotyaDev\TotyaDevMediaManager\Models\Folder;
 use TotyaDev\TotyaDevMediaManager\Traits\InteractsWithMediaFolders;
 
 class ScientificDepartment extends Model implements HasMedia
@@ -46,5 +50,10 @@ class ScientificDepartment extends Model implements HasMedia
     public function scopeActive($query)
     {
         $query->where('is_active', true);
+    }
+
+    public function folder(): ?Folder
+    {
+        return $this->folders->first();
     }
 }

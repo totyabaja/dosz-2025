@@ -49,11 +49,8 @@ class ManageDoctoralSchools extends ManageRelatedRecords
         return $table
             ->recordTitleAttribute('short_name')
             ->columns([
-                Tables\Columns\TextColumn::make('university.short_name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make(mb_ucfirst(__('reg.fieldset.full_name')))
-                    ->listWithLineBreaks()
+                Tables\Columns\TextColumn::make('full_name.hu')
+                    ->label(mb_ucfirst(__('reg.fieldset.full_name')))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

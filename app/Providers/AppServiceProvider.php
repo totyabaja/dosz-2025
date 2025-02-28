@@ -24,6 +24,7 @@ use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
 use Filament\Resources\Resource;
+use Illuminate\Pagination\Paginator;
 use RickDBCN\FilamentEmail\Filament\Resources\EmailResource as BaseEmailResource;
 use Z3d0X\FilamentLogger\Resources\ActivityResource as BaseActivityResource;
 
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
         Health::checks([
             OptimizedAppCheck::new(),
             DebugModeCheck::new(),

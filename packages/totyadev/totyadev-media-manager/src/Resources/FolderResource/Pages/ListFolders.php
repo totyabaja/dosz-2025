@@ -2,17 +2,17 @@
 
 namespace TotyaDev\TotyaDevMediaManager\Resources\FolderResource\Pages;
 
+use App\Filament\Widgets\FolderWidget;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Illuminate\Validation\ValidationException;
-use TotyaDev\TotyaDevMediaManager\Resources\FolderResource;;
+use TotyaDev\TotyaDevMediaManager\Resources\FolderResource;
 
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use TotyaDev\TotyaDevMediaManager\Models\{Folder, Model};
 use TotyaDev\TotyaDevMediaManager\Resources\Actions\GoToParentFolderAction;
-use TotyaDev\TotyaDevMediaManager\Resources\FolderResource\Widgets\FolderTreeWidget;
 
 class ListFolders extends ManageRecords
 {

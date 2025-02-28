@@ -3,6 +3,7 @@
 namespace TotyaDev\TotyaDevMediaManager;
 
 use Illuminate\Support\ServiceProvider;
+use TotyaDev\TotyaDevMediaManager\Resources\FolderResource\Widgets\FolderWidget;
 use TotyaDev\TotyaDevMediaManager\Services\TotyaDevMediaManagerServices;
 
 
