@@ -183,7 +183,7 @@ class EventRegistrationResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(fn($record): bool => $record->event->event_registration_editable),
-                Tables\actions\DeleteAction::make()
+                Tables\Actions\DeleteAction::make()
                     ->visible(fn($record): bool => $record->event->event_registration_editable),
             ])
             ->bulkActions([
