@@ -139,8 +139,8 @@
                                             <img src="{{ Auth::user()->getFilamentAvatarUrl() }}"
                                                 alt="{{ Auth::user()->name }} logója">
                                             <!--
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <span class="icon-[tabler--user] size-4"></span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //-->
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <span class="icon-[tabler--user] size-4"></span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //-->
                                         </div>
                                     </div>
                                     <div>
@@ -251,10 +251,8 @@
                                 <div class="py-6 divider text-base-content/50 after:border-0">Fiókom</div>
                                 @guest
                                     <li>
-                                        <a href="#">
-                                            <span class="icon-[tabler--login] size-5"></span>
-                                            Bejelentkezés
-                                        </a>
+                                        <a href="{{ route('filament.event.auth.login') }}"
+                                            class="icon-[tabler--login] size-5">{{ __('menu.login') }}</a>
                                     </li>
                                 @endguest
                                 @auth
