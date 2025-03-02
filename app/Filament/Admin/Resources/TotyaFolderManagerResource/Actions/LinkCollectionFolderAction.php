@@ -5,10 +5,9 @@ namespace App\Filament\Admin\Resources\TotyaFolderManagerResource\Actions;
 use Illuminate\Support\Str;
 use TomatoPHP\FilamentIcons\Components\IconPicker;
 use TotyaDev\TotyaDevMediaManager\Models\Folder;
-use Filament\Actions;
 use Filament\Forms;
+use Filament\Actions;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
 
 class LinkCollectionFolderAction
 {
@@ -24,35 +23,29 @@ class LinkCollectionFolderAction
             ->label('Könyvtár linkelése')
             ->icon('fas-link')
             ->form([
-                Forms\Components\Select::make('folder_id')
-                    ->label('name')
-                    ->columnSpanFull()
-                    ->options(fn() => Folder::query()
-                        ->whereNull('parent_id')
-                        ->get()
-                        ->mapWithKeys(fn($item) => [$item->id => $item->name])
-                        ->toArray())
-                    ->searchable()
-                    ->preload()
+                Forms\Components\Select::make('parent_id')
+                    ->label('parent')
+                    ->options(
+                        fn() => Folder::query()
+                            ->whereNull('parent_id')
+                            ->orWhere('parent_id', '-1')
+                            ->get()
+                            ->mapWithKeys(fn($item) => [$item->id => $item->name])
+                            ->toArray()
+                    )->preload()
                     ->required(),
-            ])
-            ->action(function (array $data) use ($folder_id) {
-                dd($data);
-                $folder = Folder::find($folder_id);
-                if ($folder) {
-                    $data['user_id'] = Auth::user()->id;
-                    $data['user_type'] = \App\Models\User::class;
-                    $data['model_id'] = $folder_id;
-                    $data['model_type'] = Folder::class;
-                    $data['parent_id'] = $folder_id;
-                    Folder::query()->create($data);
-                }
 
-                Notification::make()
-                    ->title('Folder Created')
-                    ->body('Folder Created Successfully')
-                    ->success()
-                    ->send();
+            ])
+            ->action(function ($data) use ($folder_id) {
+                if ($folder = Folder::find($data['parent_id'])) {
+                    $folder->update(['parent_id' => $folder_id]);
+
+                    Notification::make()
+                        ->title('Folder Linked')
+                        ->body('Folder Linked Successfully')
+                        ->success()
+                        ->send();
+                }
             });
     }
 }
