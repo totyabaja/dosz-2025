@@ -122,7 +122,7 @@ return [
         'memberships' => 'Meglévő tagságok',
     ],
     'messages' => [
-        'saved_title' => ':elem mentve',
+        'saved_title' => ':item mentve',
         'saved_body' => 'A :item sikeresen elmentve',
         'hozzajarulas' => "Kifejezetten hozzájárulok, hogy a Doktoranduszok Országos Szövetsége, mint adatkezelő a fentiekben megadott személyes adataimat, beleértve az általam esetlegesen megadott különleges adataimat a szerződés teljesítéséhez kapcsolódó kérdések rendezése céljából kezelje. A hozzájárulás megadásának hiányában nem áll módunkban válaszolni a megkeresésre vagy teljesíteni a megfogalmazott kérést.",
     ]
